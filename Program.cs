@@ -17,7 +17,7 @@ namespace ChatChit
             // Add services to the container.
             builder.Services.AddControllers();
 
-                //Connect Database
+            //Connect Database
             builder.Services.AddDbContext<ChatChitContex>(options =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
@@ -35,7 +35,7 @@ namespace ChatChit
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    ValidAudience = builder.Configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                 };
             });

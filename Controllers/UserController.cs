@@ -1,6 +1,7 @@
 ﻿using ChatChit.Data;
 using ChatChit.Models;
 using ChatChit.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace ChatChit.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> getAllUser()
         {
             try
