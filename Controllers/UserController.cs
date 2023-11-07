@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using System.IdentityModel.Tokens.Jwt;
 using BC = BCrypt.Net.BCrypt;
 
 namespace ChatChit.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -21,11 +23,37 @@ namespace ChatChit.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> getAllUser()
         {
             try
             {
+                //Postman test ok
+
+                //var currentUser = HttpContext.User;
+                //string authorizationHeader = HttpContext.Request.Headers["Authorization"];
+                //string token = authorizationHeader.Substring("Bearer ".Length);
+
+                //var tokenHandler = new JwtSecurityTokenHandler();
+                //var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+                //if (securityToken != null)
+                //{
+                //    var nameClaim = securityToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name);
+
+                //    if (nameClaim != null)
+                //    {
+                //        return Ok(nameClaim.Value);
+                //    }
+                //}
+
+                //Test not ok
+
+                //var nameClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name);
+
+                //if (nameClaim != null)
+                //{
+                //    return Ok(nameClaim.Value);
+                //}
                 return Ok(await _userService.GetAllUser());
             }
             catch
@@ -55,10 +83,8 @@ namespace ChatChit.Controllers
             newUser.password = hashedPassword;
             newUser.createdAt = DateTime.Now.ToUniversalTime();
             newUser.updatedAt = DateTime.Now.ToUniversalTime();
-
-
-                await _userService.AddUser(newUser);
-                return Ok(newUser);
+            await _userService.AddUser(newUser);
+            return Ok(newUser);
 
         }
     }

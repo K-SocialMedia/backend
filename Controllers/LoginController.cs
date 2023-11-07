@@ -18,7 +18,7 @@ namespace ChatChit.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
-        {
+        { 
             IActionResult response = Unauthorized();
             if (login.email != null && login.password != null && login.email != "" && login.password != "")
             {
