@@ -9,14 +9,13 @@ namespace ChatChit.Models
         [Column("id")]
         public Guid id { get; set; }
         [Column("full_name")] 
-        public string? fullName { get; set; }
-
+        public string fullName { get; set; }
         [Column("email")]
-        public string? email { get; set; }
+        public string email { get; set; }
         [Column("image")]
         public string? image { get; set; }
         [Column("nick_name")]
-        public string? nickName {  get; set; }
+        public string nickName {  get; set; }
         [Column("password")]
         public string password { get; set; }
         [Column("created_at")]

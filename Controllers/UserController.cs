@@ -81,6 +81,7 @@ namespace ChatChit.Controllers
             newUser.fullName = user.fullName;
             newUser.email = user.email;
             newUser.password = hashedPassword;
+            newUser.nickName = user.nickName;
             newUser.createdAt = DateTime.Now.ToUniversalTime();
             newUser.updatedAt = DateTime.Now.ToUniversalTime();
             await _userService.AddUser(newUser);
