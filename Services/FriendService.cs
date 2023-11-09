@@ -6,7 +6,7 @@ namespace ChatChit.Services
 {
     public interface IFriendService
     {
-        public Task<List<FriendModel>> GetAllFriendOfUser(string id);
+        public Task<List<FriendModel>> GetAllFriendOfUser(Guid id);
     }
 
     public class FriendService : IFriendService
@@ -17,7 +17,7 @@ namespace ChatChit.Services
             _contex = contex;
         }
 
-        public async Task<List<FriendModel>> GetAllFriendOfUser(string id)
+        public async Task<List<FriendModel>> GetAllFriendOfUser(Guid id)
         {
             var result = await _contex.Friends
                 .Where(friend => friend.userId == id)

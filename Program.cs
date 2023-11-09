@@ -13,6 +13,7 @@ namespace ChatChit
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -55,6 +56,10 @@ namespace ChatChit
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors(options => options.WithOrigins(new[] { "http://localhost:3000" })
+            .AllowAnyHeader().
+            AllowAnyMethod());
 
             app.UseHttpsRedirection();
 
