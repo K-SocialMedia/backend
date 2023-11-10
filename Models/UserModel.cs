@@ -15,7 +15,7 @@ namespace ChatChit.Models
         [Column("image")]
         public string? image { get; set; }
         [Column("nick_name")]
-        public string nickName {  get; set; }
+        public string? nickName {  get; set; }
         [Column("password")]
         public string password { get; set; }
         [Column("created_at")]

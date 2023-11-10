@@ -8,7 +8,8 @@ namespace ChatChit.Repositories
     public interface IUserService
     {
         public Task<List<UserModel>> GetAllUser();
-        public Task<UserModel> GetUser(string id);
+        public Task<UserModel> GetUserById(string id);
+        public Task<List<UserModel>> GetUserByNickName(string nickName);
         public Task<UserModel> AddUser(UserModel user);
         public Task<UserModel> UpdateUser(UserModel user, Guid id);
         public Task DeleteUser(UserModel deleteUser);
@@ -29,10 +30,20 @@ namespace ChatChit.Repositories
             return users;
         }
 
-        public async Task<UserModel> GetUser(string id)
+        public async Task<UserModel> GetUserById(string id)
         {
             var user = await _context.Users.FindAsync(id);
             return user;
+        }
+
+        public async Task<List<UserModel>> GetUserByNickName(string nickName)
+        {
+            var newNickName = nickName.ToLower();
+            var users = await _context.Users
+        .Where(u => u.nickName.ToLower().Contains(newNickName))
+        .Take(5)
+        .ToListAsync();
+            return users;
         }
 
         public async Task<UserModel> AddUser(UserModel user)
