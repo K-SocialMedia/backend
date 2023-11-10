@@ -1,4 +1,4 @@
-﻿namespace ChatChit.Models
+﻿ namespace ChatChit.Models
 {
     public class ChatRoom
     {
