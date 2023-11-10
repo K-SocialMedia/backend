@@ -1,4 +1,5 @@
 using ChatChit.Data;
+using ChatChit.Hub;
 using ChatChit.Repositories;
 using ChatChit.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +14,7 @@ namespace ChatChit
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -55,6 +57,24 @@ namespace ChatChit
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseRouting();
+
+            app.UseCors(options => options.WithOrigins(new[] { "http://localhost:3000", "http://127.0.0.1:5500" })
+            .AllowAnyHeader().
+            AllowAnyMethod().
+            AllowCredentials()
+            );
+
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
+            });
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 

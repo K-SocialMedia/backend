@@ -1,15 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChatChit.Models
 {
     public class FriendModel
     {
-        [Column("user_id")]
-        public string userId { get; set; }
-        [Column("friend_id")]
-        public string friendId { get; set; }
+        [Key]
+        public Guid id { get; set; }
+        public Guid userId { get; set; }
+        public Guid friendId { get; set; }
 
+        [ForeignKey("userId")]
         public UserModel User { get; set; }
-        public UserModel UserFriend {  get; set; }
+
+        [ForeignKey("friendId")]
+        public UserModel Friend { get; set; }
     }
 }
