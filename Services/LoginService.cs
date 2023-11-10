@@ -11,7 +11,7 @@ namespace ChatChit.Services
 {
     public interface ILoginService
     {
-        public Task<UserModel> CheckInformation(string email, string password);
+        public Task<UserModel?> CheckInformation(string email, string password);
         public string GenerateJSONWebToken(UserModel user);
     }
 
@@ -26,7 +26,7 @@ namespace ChatChit.Services
             _config = config;
         }
 
-        public async Task<UserModel> CheckInformation(string email, string password)
+        public async Task<UserModel?> CheckInformation(string email, string password)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.email == email);
             if (user == null)
@@ -43,23 +43,24 @@ namespace ChatChit.Services
             }
         }
 
-            public string GenerateJSONWebToken(UserModel user)
-            {
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        public string GenerateJSONWebToken(UserModel user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-                var claims = new[]
-                {
+            var claims = new[]
+            {
+                    new Claim("UserId", user.id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Name, user.fullName),
                     new Claim(JwtRegisteredClaimNames.Email,user.email),
                 };
 
-                var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-                  _config["Jwt:Issuer"],
-                  claims,
-                  expires: DateTime.Now.AddMinutes(1),
-                  signingCredentials: credentials);
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+              _config["Jwt:Issuer"],
+              claims,
+              expires: DateTime.Now.AddMinutes(1),
+              signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
-            }
+        }
     }
 }

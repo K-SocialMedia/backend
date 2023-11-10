@@ -2,9 +2,9 @@
 using ChatChit.Data;
 using ChatChit.Models;
 
-namespace ChatChit.Hub
+namespace ChatChit.Hubs
 {
-    public class ChatHub : Microsoft.AspNetCore.SignalR.Hub
+    public class ChatHub : Hub
     {
         private readonly ChatChitContex _context;
         

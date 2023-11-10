@@ -1,5 +1,5 @@
 using ChatChit.Data;
-using ChatChit.Hub;
+using ChatChit.Hubs;
 using ChatChit.Repositories;
 using ChatChit.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,8 +25,10 @@ namespace ChatChit
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
             });
 
+            //AddScoped
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ILoginService, LoginService>();
+            builder.Services.AddScoped<IFriendService, FriendService>();
 
             //JWT Auth
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -66,6 +68,8 @@ namespace ChatChit
             AllowCredentials()
             );
 
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -78,8 +82,6 @@ namespace ChatChit
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.MapControllers();
 

@@ -1,4 +1,4 @@
-﻿using ChatChit.Data;
+﻿    using ChatChit.Data;
 using ChatChit.Models;
 using ChatChit.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,6 @@ namespace ChatChit.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -23,6 +22,7 @@ namespace ChatChit.Controllers
         }
 
         [HttpGet]
+        [Route("get-all-user")]
         public async Task<IActionResult> getAllUser()
         {
             try
@@ -62,10 +62,11 @@ namespace ChatChit.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser(string id)
+        [HttpGet]
+        [Route("get-user-by-id")]
+        public async Task<IActionResult> GetUserById(string id)
         {
-            UserModel findUser = await _userService.GetUser(id);
+            UserModel findUser = await _userService.GetUserById(id);
             if (findUser == null)
             {
                 return NotFound();
@@ -87,6 +88,18 @@ namespace ChatChit.Controllers
             await _userService.AddUser(newUser);
             return Ok(newUser);
 
+        }
+
+        [HttpGet]
+        [Route("get-user-by-nick-name")]
+        public async Task<IActionResult> GetUserByNickName(string nickName)
+        {
+            List<UserModel> result = await _userService.GetUserByNickName(nickName);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
     }
 }
