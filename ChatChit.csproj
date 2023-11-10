@@ -35,8 +35,4 @@
     <EditorConfigFiles Remove="F:\TDC\ChatChit\Controllers\.editorconfig" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="F:\TDC\ChatChit\Controllers\.editorconfig" />
-  </ItemGroup>
-
 </Project>
