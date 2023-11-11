@@ -1,5 +1,5 @@
 using ChatChit.Data;
-using ChatChit.Hub;
+using ChatChit.Hubs;
 using ChatChit.Repositories;
 using ChatChit.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

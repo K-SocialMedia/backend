@@ -2,9 +2,9 @@
 using ChatChit.Data;
 using ChatChit.Models;
 
-namespace ChatChit.Hub
+namespace ChatChit.Hubs
 {
-    public class ChatHub : Microsoft.AspNetCore.SignalR.Hub
+    public class ChatHub : Hub
     {
         private readonly ChatChitContex _context;
         
@@ -26,7 +26,7 @@ namespace ChatChit.Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.User + userConnection.Room);
         }
 
-        public async Task SendMessage(string message, string fromId, string toId)
+        public async Task SendMessage(string message, string fromId, string toId, string Room)
         {
             MessageModel messageModel = new MessageModel();
             messageModel.content = message;
@@ -37,7 +37,7 @@ namespace ChatChit.Hub
             //_context.MessageMxhs.Add(mes);
             //await _context.SaveChangesAsync();
 
-            await Clients.All.SendAsync("ReceiveMessage", message, fromId, toId);
+            await Clients.Group(Room).SendAsync("ReceiveMessage", messageModel.content, messageModel.senderId);
         }
     }
 }
