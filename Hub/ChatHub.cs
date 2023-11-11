@@ -37,7 +37,7 @@ namespace ChatChit.Hubs
             //_context.MessageMxhs.Add(mes);
             //await _context.SaveChangesAsync();
 
-            await Clients.Group(Room).SendAsync("ReceiveMessage", messageModel.content, messageModel.senderId);
+            await Clients.OthersInGroup(Room).SendAsync("ReceiveMessage", messageModel.content, messageModel.senderId);
         }
     }
 }
