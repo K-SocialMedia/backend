@@ -1,5 +1,6 @@
 ﻿    using ChatChit.Data;
 using ChatChit.Models;
+using ChatChit.Models.ResponseModel;
 using ChatChit.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -94,12 +95,21 @@ namespace ChatChit.Controllers
         [Route("get-user-by-nick-name")]
         public async Task<IActionResult> GetUserByNickName(string nickName)
         {
-            List<UserModel> result = await _userService.GetUserByNickName(nickName);
-            if (result == null)
+            List<UserModel> users = await _userService.GetUserByNickName(nickName);
+            if (users == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+
+            List<UserResponse> result = users.Select(user => new UserResponse
+            {
+                id = user.id,
+                nickName = user.nickName,
+                fullName = user.fullName,
+                image = user.image
+            }).ToList();
+
+            return Ok(result);  
         }
     }
 }
