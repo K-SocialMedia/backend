@@ -13,14 +13,14 @@ namespace ChatChit.Hubs
             _context = context;
         }
 
-        public async Task JoinRoom(ChatRoom userConnection)
+        public async Task JoinRoom(ChatRoomModel userConnection)
         {
 
             //await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", "Khoi", $"{userConnection.User} has joined {userConnection.Room}");
             await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room);
         }
 
-        public async Task JoinRoomChat(ChatRoom userConnection)
+        public async Task JoinRoomChat(ChatRoomModel userConnection)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room + userConnection.User);
             await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.User + userConnection.Room);
