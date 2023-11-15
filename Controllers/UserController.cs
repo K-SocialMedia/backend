@@ -1,4 +1,4 @@
-﻿    using ChatChit.Data;
+﻿using ChatChit.Data;
 using ChatChit.Models;
 using ChatChit.Models.ResponseModel;
 using ChatChit.Repositories;
@@ -93,6 +93,7 @@ namespace ChatChit.Controllers
 
         [HttpGet]
         [Route("get-user-by-nick-name")]
+        [Authorize]
         public async Task<IActionResult> GetUserByNickName(string nickName)
         {
             List<UserModel> users = await _userService.GetUserByNickName(nickName);
@@ -109,7 +110,7 @@ namespace ChatChit.Controllers
                 image = user.image
             }).ToList();
 
-            return Ok(result);  
+            return Ok(result);
         }
     }
 }

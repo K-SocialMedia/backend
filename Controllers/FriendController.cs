@@ -1,6 +1,7 @@
 ﻿using ChatChit.Models;
 using ChatChit.Models.RequestModel;
 using ChatChit.Services;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -11,6 +12,7 @@ namespace ChatChit.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FriendController : ControllerBase
     {
         private readonly IFriendService _friendService;
@@ -20,6 +22,7 @@ namespace ChatChit.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetFriendOfUser(Guid id)
         {
                 var result = await _friendService.GetAllFriendOfUser(id);
