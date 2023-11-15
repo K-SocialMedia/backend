@@ -6,9 +6,13 @@ namespace ChatChit.Models
     public class FriendModel
     {
         [Key]
+        [Column("id")]
         public Guid id { get; set; }
+        [Column("user_id")]
         public Guid userId { get; set; }
+        [Column("friend_id")]
         public Guid friendId { get; set; }
+        [Column("status")]
         public FriendStatus? status {  get; set; }
 
         [ForeignKey("userId")]

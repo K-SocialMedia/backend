@@ -3,7 +3,8 @@ using ChatChit.Models;
 using ChatChit.Models.RequestModel;
 using ChatChit.Models.ResponseModel;
 using ChatChit.Services;
-using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -13,6 +14,7 @@ namespace ChatChit.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FriendController : ControllerBase
     {
         private readonly IFriendService _friendService;
@@ -23,7 +25,6 @@ namespace ChatChit.Controllers
 
         [HttpGet]
         [Route("get-all-friend-of-user")]
-        [Authorize]
         public async Task<IActionResult> GetAllFriendOfUser()
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
@@ -45,7 +46,6 @@ namespace ChatChit.Controllers
 
         [HttpGet]
         [Route("get-all-pending-friend-of-user")]
-        [Authorize]
         public async Task<IActionResult> GetAllPendingFriendOfUser()
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
@@ -66,7 +66,6 @@ namespace ChatChit.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> HandleFriend([FromBody] HandleFriendRequestModel model )
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
