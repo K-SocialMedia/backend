@@ -7,6 +7,7 @@ namespace ChatChit.Services
     public interface IFriendService
     {
         public Task<List<UserModel>> GetAllFriendOfUser(Guid id);
+        public Task<List<UserModel>> GetPendingFriendOfUser(Guid id);
         public Task HandleFriend(FriendModel friend);
     }
 
@@ -18,10 +19,19 @@ namespace ChatChit.Services
             _contex = contex;
         }
 
-        public async Task<List<UserModel?>> GetAllFriendOfUser(Guid userId)
+        public async Task<List<UserModel>> GetAllFriendOfUser(Guid userId)
         {
             var result = await _contex.Friends
                 .Where(f => (f.userId == userId || f.friendId == userId) && f.status == FriendModel.FriendStatus.Accepted)
+                .Select(f => f.userId == userId ? f.Friend : f.User)
+                .ToListAsync();
+            return result;
+        }
+
+        public async Task<List<UserModel?>> GetPendingFriendOfUser(Guid userId)
+        {
+            var result = await _contex.Friends
+                .Where(f => (f.userId == userId || f.friendId == userId) && f.status == FriendModel.FriendStatus.Pending)
                 .Select(f => f.userId == userId ? f.Friend : f.User)
                 .ToListAsync();
             return result;
@@ -38,7 +48,14 @@ namespace ChatChit.Services
             //Nếu chưa có thì sẽ là pending
             if(check != null )
             {
+                if(friend.status == FriendModel.FriendStatus.Rejected)
+                {
+                    _contex.Friends.Remove(friend);
+                }
+                else
+                {
                 check.status = friend.status;
+                }
             }
             else
             {

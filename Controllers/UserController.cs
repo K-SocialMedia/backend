@@ -1,4 +1,5 @@
 ﻿using ChatChit.Data;
+using ChatChit.Helpers;
 using ChatChit.Models;
 using ChatChit.Models.ResponseModel;
 using ChatChit.Repositories;
@@ -63,18 +64,6 @@ namespace ChatChit.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("get-user-by-id")]
-        public async Task<IActionResult> GetUserById(string id)
-        {
-            UserModel findUser = await _userService.GetUserById(id);
-            if (findUser == null)
-            {
-                return NotFound();
-            }
-            return Ok(findUser);
-        }
-
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] CreateUserModel user)
         {
@@ -89,6 +78,24 @@ namespace ChatChit.Controllers
             await _userService.AddUser(newUser);
             return Ok(newUser);
 
+        }
+
+        [HttpGet]
+        [Route("get-user-by-id")]
+        public async Task<IActionResult> GetUserById()
+        {
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
+            {
+                Guid id = userId.Value;
+                UserModel findUser = await _userService.GetUserById(id);
+                if (findUser == null)
+                {
+                    return NotFound();
+                }
+                return Ok(findUser);
+            }
+            return BadRequest("UserId claim not found in token");
         }
 
         [HttpGet]

@@ -8,7 +8,7 @@ namespace ChatChit.Repositories
     public interface IUserService
     {
         public Task<List<UserModel>> GetAllUser();
-        public Task<UserModel> GetUserById(string id);
+        public Task<UserModel> GetUserById(Guid id);
         public Task<List<UserModel>> GetUserByNickName(string nickName);
         public Task<UserModel> AddUser(UserModel user);
         public Task<UserModel> UpdateUser(UserModel user, Guid id);
@@ -30,7 +30,7 @@ namespace ChatChit.Repositories
             return users;
         }
 
-        public async Task<UserModel> GetUserById(string id)
+        public async Task<UserModel> GetUserById(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
             return user;

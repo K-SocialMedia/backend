@@ -58,7 +58,7 @@ namespace ChatChit.Services
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
               _config["Jwt:Issuer"],
               claims,
-              expires: DateTime.Now.AddMinutes(1),
+              expires: DateTime.Now.AddMinutes(30),
               signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
