@@ -1,7 +1,9 @@
 ﻿using ChatChit.Models;
+using ChatChit.Models.RequestModel;
 using ChatChit.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using static Npgsql.PostgresTypes.PostgresCompositeType;
 
@@ -25,21 +27,25 @@ namespace ChatChit.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> HandleFriend(Guid myId, Guid friendId, FriendModel.FriendStatus status)
+        public async Task<IActionResult> HandleFriend([FromBody] HandleFriendRequestModel model )
         {
-            try
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadToken(model.jwtToken) as JwtSecurityToken;
+            if (token != null)
             {
-                FriendModel newFriend = new FriendModel();
-                newFriend.userId = myId;
-                newFriend.friendId = friendId;
-                newFriend.status = status;
-                await _friendService.HandleFriend(newFriend);
-                return Ok("Status: " + newFriend.status);
+                var userIdClaim = token.Claims.FirstOrDefault(c => c.Type == "userId");
+                if (userIdClaim != null)
+                {
+                    FriendModel newFriend = new FriendModel();
+                    newFriend.userId = Guid.Parse(userIdClaim.Value);
+                    newFriend.friendId = model.friendId;
+                    newFriend.status = model.status;
+                    await _friendService.HandleFriend(newFriend);
+                    return Ok("Status: " + newFriend.status);
+                }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            // Token không hợp lệ
+            return Unauthorized(); 
         }
     }
 }

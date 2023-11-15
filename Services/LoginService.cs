@@ -50,7 +50,7 @@ namespace ChatChit.Services
 
             var claims = new[]
             {
-                    new Claim("UserId", user.id.ToString()),
+                    new Claim("userId", user.id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Name, user.fullName),
                     new Claim(JwtRegisteredClaimNames.Email,user.email),
                 };
