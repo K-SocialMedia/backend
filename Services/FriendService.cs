@@ -50,7 +50,7 @@ namespace ChatChit.Services
             {
                 if(friend.status == FriendModel.FriendStatus.Rejected)
                 {
-                    _contex.Friends.Remove(friend);
+                    _contex.Friends.Remove(check);
                 }
                 else
                 {
