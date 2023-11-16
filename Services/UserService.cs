@@ -1,5 +1,6 @@
 ﻿using ChatChit.Data;
 using ChatChit.Models;
+using ChatChit.Models.RequestModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,7 @@ namespace ChatChit.Repositories
         public Task<UserModel> GetUserById(Guid id);
         public Task<List<UserModel>> GetUserByNickName(string nickName);
         public Task<UserModel> AddUser(UserModel user);
-        public Task<UserModel> UpdateUser(UserModel user, Guid id);
+        public Task<UserModel?> UpdateUser(UserRequestModel user, Guid id);
         public Task DeleteUser(UserModel deleteUser);
     }
 
@@ -53,16 +54,25 @@ namespace ChatChit.Repositories
             return user;
         }
 
-        public async Task<UserModel> UpdateUser(UserModel user, Guid id)
+        public async Task<UserModel?> UpdateUser(UserRequestModel user, Guid id)
         {
-            if (id == user.id)
+            var updateUser = await _context.Users.FindAsync(id);
+            if (updateUser != null)
             {
-                var updateUser = await _context.Users.FindAsync(id);
-                if (updateUser != null)
-                {
-                    _context.Entry(updateUser).State = EntityState.Modified;
-                    return updateUser;
-                }
+                if (user.fullName != null)
+                    updateUser.fullName = user.fullName;
+
+                if (user.image != null)
+                    updateUser.image = user.image;
+
+                if (user.nickName != null)
+                    updateUser.nickName = user.nickName;
+
+                updateUser.updatedAt = DateTime.UtcNow;
+
+                _context.Entry(updateUser).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return updateUser;
             }
             return null;
         }

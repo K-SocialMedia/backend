@@ -1,6 +1,7 @@
 ﻿using ChatChit.Data;
 using ChatChit.Helpers;
 using ChatChit.Models;
+using ChatChit.Models.RequestModel;
 using ChatChit.Models.ResponseModel;
 using ChatChit.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,7 @@ namespace ChatChit.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -25,6 +27,7 @@ namespace ChatChit.Controllers
 
         [HttpGet]
         [Route("get-all-user")]
+        [AllowAnonymous]
         public async Task<IActionResult> getAllUser()
         {
             try
@@ -100,7 +103,6 @@ namespace ChatChit.Controllers
 
         [HttpGet]
         [Route("get-user-by-nick-name")]
-        [Authorize]
         public async Task<IActionResult> GetUserByNickName(string nickName)
         {
             List<UserModel> users = await _userService.GetUserByNickName(nickName);
@@ -118,6 +120,26 @@ namespace ChatChit.Controllers
             }).ToList();
 
             return Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser([FromBody]UserRequestModel user)
+        {
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
+            {
+                Guid id = userId.Value;
+                var updateUser = await _userService.UpdateUser(user, id);
+                if(updateUser != null)
+                {
+                    return Ok(updateUser);
+                }
+                else
+                {
+                    return NotFound("User not found");
+                }
+            }
+            return BadRequest("UserId claim not found in token");
         }
     }
 }
