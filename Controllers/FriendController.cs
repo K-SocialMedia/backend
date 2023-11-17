@@ -30,9 +30,9 @@ namespace ChatChit.Controllers
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
-                Guid id = userId.Value;
-                var users = await _friendService.GetAllFriendOfUser(id);
-                List<UserResponse> result = users.Select(user => new UserResponse
+                Guid currentUserId = userId.Value;
+                var users = await _friendService.GetAllFriendOfUser(currentUserId);
+                List<UserResponseModel> result = users.Select(user => new UserResponseModel
                 {
                     id = user.id,
                     nickName = user.nickName,
@@ -53,7 +53,7 @@ namespace ChatChit.Controllers
             {
                 Guid id = userId.Value;
                 var users = await _friendService.GetPendingFriendOfUser(id);
-                List<UserResponse> result = users.Select(user => new UserResponse
+                List<UserResponseModel> result = users.Select(user => new UserResponseModel
                 {
                     id = user.id,
                     nickName = user.nickName,

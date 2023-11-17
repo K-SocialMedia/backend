@@ -6,8 +6,8 @@ namespace ChatChit.Services
 {
     public interface IFriendService
     {
-        public Task<List<UserModel>> GetAllFriendOfUser(Guid id);
-        public Task<List<UserModel>> GetPendingFriendOfUser(Guid id);
+        public Task<List<UserModel>> GetAllFriendOfUser(Guid currentUserId);
+        public Task<List<UserModel>> GetPendingFriendOfUser(Guid currentUserId);
         public Task HandleFriend(FriendModel friend);
     }
 
@@ -19,20 +19,20 @@ namespace ChatChit.Services
             _contex = contex;
         }
 
-        public async Task<List<UserModel>> GetAllFriendOfUser(Guid userId)
+        public async Task<List<UserModel>> GetAllFriendOfUser(Guid currentUserId)
         {
             var result = await _contex.Friends
-                .Where(f => (f.userId == userId || f.friendId == userId) && f.status == FriendModel.FriendStatus.Accepted)
-                .Select(f => f.userId == userId ? f.Friend : f.User)
+                .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) && f.status == FriendModel.FriendStatus.Accepted)
+                .Select(f => f.userId == currentUserId ? f.Friend : f.User)
                 .ToListAsync();
             return result;
         }
 
-        public async Task<List<UserModel?>> GetPendingFriendOfUser(Guid userId)
+        public async Task<List<UserModel?>> GetPendingFriendOfUser(Guid currentUserId)
         {
             var result = await _contex.Friends
-                .Where(f => (f.userId == userId || f.friendId == userId) && f.status == FriendModel.FriendStatus.Pending)
-                .Select(f => f.userId == userId ? f.Friend : f.User)
+                .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) && f.status == FriendModel.FriendStatus.Pending)
+                .Select(f => f.userId == currentUserId ? f.Friend : f.User)
                 .ToListAsync();
             return result;
         }

@@ -1,6 +1,7 @@
 ﻿using ChatChit.Data;
 using ChatChit.Models;
 using ChatChit.Models.RequestModel;
+using ChatChit.Models.ResponseModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,10 @@ namespace ChatChit.Repositories
     public interface IUserService
     {
         public Task<List<UserModel>> GetAllUser();
-        public Task<UserModel> GetUserById(Guid id);
-        public Task<List<UserModel>> GetUserByNickName(string nickName);
+        public Task<UserModel> GetUserById(Guid currentUserId);
+        public Task<List<UserResponseModel>> GetUserByNickName(Guid currentUserId,string nickName);
         public Task<UserModel> AddUser(UserModel user);
-        public Task<UserModel?> UpdateUser(UserRequestModel user, Guid id);
+        public Task<UserModel?> UpdateUser(Guid currentUserId, UserRequestModel user);
         public Task DeleteUser(UserModel deleteUser);
     }
 
@@ -31,19 +32,32 @@ namespace ChatChit.Repositories
             return users;
         }
 
-        public async Task<UserModel> GetUserById(Guid id)
+        public async Task<UserModel> GetUserById(Guid currentUserId)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(currentUserId);
             return user;
         }
 
-        public async Task<List<UserModel>> GetUserByNickName(string nickName)
+        public async Task<List<UserResponseModel>> GetUserByNickName(Guid currentUserId, string nickName)
         {
-            var newNickName = nickName.ToLower();
             var users = await _context.Users
-        .Where(u => u.nickName.ToLower().Contains(newNickName))
-        .Take(5)
-        .ToListAsync();
+            .Where(u => u.id != currentUserId && u.nickName.ToLower().Contains(nickName.ToLower()))
+            .Take(15)
+            .Select(u => new UserResponseModel
+            {
+           // Gán thông tin cơ bản từ người dùng
+               id = u.id,
+               nickName = u.nickName,
+               fullName = u.fullName,
+               image = u.image,
+
+               isFriend = !_context.Friends.Any(f =>
+                   (f.userId == currentUserId && f.friendId == u.id) ||
+                   (f.userId == u.id && f.friendId == currentUserId)
+               )
+            })
+            .ToListAsync();
+
             return users;
         }
 
@@ -54,9 +68,9 @@ namespace ChatChit.Repositories
             return user;
         }
 
-        public async Task<UserModel?> UpdateUser(UserRequestModel user, Guid id)
+        public async Task<UserModel?> UpdateUser(Guid currentUserId, UserRequestModel user)
         {
-            var updateUser = await _context.Users.FindAsync(id);
+            var updateUser = await _context.Users.FindAsync(currentUserId);
             if (updateUser != null)
             {
                 if (user.fullName != null)

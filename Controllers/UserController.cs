@@ -90,8 +90,8 @@ namespace ChatChit.Controllers
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
-                Guid id = userId.Value;
-                UserModel findUser = await _userService.GetUserById(id);
+                Guid currentUserId = userId.Value;
+                UserModel findUser = await _userService.GetUserById(currentUserId);
                 if (findUser == null)
                 {
                     return NotFound();
@@ -105,21 +105,19 @@ namespace ChatChit.Controllers
         [Route("get-user-by-nick-name")]
         public async Task<IActionResult> GetUserByNickName(string nickName)
         {
-            List<UserModel> users = await _userService.GetUserByNickName(nickName);
-            if (users == null)
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
             {
-                return NotFound();
+                Guid currentUserId = userId.Value;
+                List<UserResponseModel> result = await _userService.GetUserByNickName(currentUserId,nickName);
+                if (result == null || result.Count == 0)
+                {
+                    return NotFound();
+                }
+
+                return Ok(result);
             }
-
-            List<UserResponse> result = users.Select(user => new UserResponse
-            {
-                id = user.id,
-                nickName = user.nickName,
-                fullName = user.fullName,
-                image = user.image
-            }).ToList();
-
-            return Ok(result);
+            return BadRequest("UserId claim not found in token");
         }
 
         [HttpPut]
@@ -128,8 +126,8 @@ namespace ChatChit.Controllers
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
-                Guid id = userId.Value;
-                var updateUser = await _userService.UpdateUser(user, id);
+                Guid currentUserId = userId.Value;
+                var updateUser = await _userService.UpdateUser(currentUserId, user);
                 if(updateUser != null)
                 {
                     return Ok(updateUser);
