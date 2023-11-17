@@ -27,6 +27,8 @@ namespace ChatChit
 
             //AddScoped
             builder.Services.AddScoped<IUserService, UserService>();
+
+
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IFriendService, FriendService>();
 

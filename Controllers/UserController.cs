@@ -32,33 +32,6 @@ namespace ChatChit.Controllers
         {
             try
             {
-                //Postman test ok
-
-                //var currentUser = HttpContext.User;
-                //string authorizationHeader = HttpContext.Request.Headers["Authorization"];
-                //string token = authorizationHeader.Substring("Bearer ".Length);
-
-                //var tokenHandler = new JwtSecurityTokenHandler();
-                //var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-
-                //if (securityToken != null)
-                //{
-                //    var nameClaim = securityToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name);
-
-                //    if (nameClaim != null)
-                //    {
-                //        return Ok(nameClaim.Value);
-                //    }
-                //}
-
-                //Test not ok
-
-                //var nameClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Name);
-
-                //if (nameClaim != null)
-                //{
-                //    return Ok(nameClaim.Value);
-                //}
                 return Ok(await _userService.GetAllUser());
             }
             catch
@@ -68,6 +41,7 @@ namespace ChatChit.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> AddUser([FromBody] CreateUserModel user)
         {
             var hashedPassword = BC.HashPassword(user.password);
@@ -82,6 +56,7 @@ namespace ChatChit.Controllers
             return Ok(newUser);
 
         }
+
 
         [HttpGet]
         [Route("get-user-by-id")]
@@ -109,7 +84,7 @@ namespace ChatChit.Controllers
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
-                List<UserResponseModel> result = await _userService.GetUserByNickName(currentUserId,nickName);
+                List<UserResponseModel> result = await _userService.GetUserByNickName(currentUserId, nickName);
                 if (result == null || result.Count == 0)
                 {
                     return NotFound();
@@ -121,14 +96,14 @@ namespace ChatChit.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUser([FromBody]UserRequestModel user)
+        public async Task<IActionResult> UpdateUser([FromBody] UserRequestModel user)
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
                 var updateUser = await _userService.UpdateUser(currentUserId, user);
-                if(updateUser != null)
+                if (updateUser != null)
                 {
                     return Ok(updateUser);
                 }

@@ -1,13 +1,14 @@
 ﻿using ChatChit.Data;
 using ChatChit.Models;
+using ChatChit.Models.ResponseModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatChit.Services
 {
     public interface IFriendService
     {
-        public Task<List<UserModel>> GetAllFriendOfUser(Guid currentUserId);
-        public Task<List<UserModel>> GetPendingFriendOfUser(Guid currentUserId);
+        public Task<List<UserResponseModel>> GetAllFriendOfUser(Guid currentUserId);
+        public Task<List<UserResponseModel>> GetPendingFriendOfUser(Guid currentUserId);
         public Task HandleFriend(FriendModel friend);
     }
 
@@ -19,22 +20,40 @@ namespace ChatChit.Services
             _contex = contex;
         }
 
-        public async Task<List<UserModel>> GetAllFriendOfUser(Guid currentUserId)
+        public async Task<List<UserResponseModel>> GetAllFriendOfUser(Guid currentUserId)
         {
             var result = await _contex.Friends
-                .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) && f.status == FriendModel.FriendStatus.Accepted)
+                .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) 
+                && f.status == FriendModel.FriendStatus.Accepted)
                 .Select(f => f.userId == currentUserId ? f.Friend : f.User)
+                .Select(user => new UserResponseModel
+                {
+                    id = user.id,
+                    nickName = user.nickName,
+                    fullName = user.fullName,
+                    image = user.image
+                })
                 .ToListAsync();
+
             return result;
         }
 
-        public async Task<List<UserModel?>> GetPendingFriendOfUser(Guid currentUserId)
+        public async Task<List<UserResponseModel>> GetPendingFriendOfUser(Guid currentUserId)
         {
-            var result = await _contex.Friends
-                .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) && f.status == FriendModel.FriendStatus.Pending)
+            var users = await _contex.Friends
+                .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) 
+                && f.status == FriendModel.FriendStatus.Pending)
                 .Select(f => f.userId == currentUserId ? f.Friend : f.User)
+                .Select(user => new UserResponseModel
+                {
+                    id = user.id,
+                    nickName = user.nickName,
+                    fullName = user.fullName,
+                    image = user.image
+                })
                 .ToListAsync();
-            return result;
+
+            return users;
         }
 
         public async Task HandleFriend(FriendModel friend)
@@ -44,8 +63,6 @@ namespace ChatChit.Services
                             (f.userId == friend.userId && f.friendId == friend.friendId) ||
                             (f.userId == friend.friendId && f.friendId == friend.userId)
                         );
-            //Nếu đã có mối quan hệ bạn bè trong database thì sẽ thay đổi
-            //Nếu chưa có thì sẽ là pending
             if(check != null )
             {
                 if(friend.status == FriendModel.FriendStatus.Rejected)

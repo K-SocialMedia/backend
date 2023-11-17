@@ -31,15 +31,15 @@ namespace ChatChit.Controllers
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
-                var users = await _friendService.GetAllFriendOfUser(currentUserId);
-                List<UserResponseModel> result = users.Select(user => new UserResponseModel
+                var result = await _friendService.GetAllFriendOfUser(currentUserId);
+                if (result != null && result.Any())
                 {
-                    id = user.id,
-                    nickName = user.nickName,
-                    fullName = user.fullName,
-                    image = user.image
-                }).ToList();
-                return Ok(result);
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound("Dont have any friend");
+                }
             }
             return BadRequest("UserId claim not found in token");
         }
@@ -51,16 +51,16 @@ namespace ChatChit.Controllers
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
-                Guid id = userId.Value;
-                var users = await _friendService.GetPendingFriendOfUser(id);
-                List<UserResponseModel> result = users.Select(user => new UserResponseModel
+                Guid currentUserId = userId.Value;
+                var result = await _friendService.GetPendingFriendOfUser(currentUserId);
+                if (result != null && result.Any())
                 {
-                    id = user.id,
-                    nickName = user.nickName,
-                    fullName = user.fullName,
-                    image = user.image
-                }).ToList();
-                return Ok(result);
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound("No friend request");
+                }
             }
             return BadRequest("UserId claim not found in token");
         }
@@ -79,8 +79,7 @@ namespace ChatChit.Controllers
                 await _friendService.HandleFriend(newFriend);
                 return Ok("Status: " + newFriend.status);
             };
-            // Token không hợp lệ
-            return Unauthorized(); 
+            return BadRequest("UserId claim not found in token");
         }
     }
 }

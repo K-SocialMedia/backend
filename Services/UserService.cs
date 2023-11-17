@@ -68,6 +68,7 @@ namespace ChatChit.Repositories
             return user;
         }
 
+
         public async Task<UserModel?> UpdateUser(Guid currentUserId, UserRequestModel user)
         {
             var updateUser = await _context.Users.FindAsync(currentUserId);
