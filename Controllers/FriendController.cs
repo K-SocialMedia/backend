@@ -41,7 +41,7 @@ namespace ChatChit.Controllers
                     return NotFound("Dont have any friend");
                 }
             }
-            return BadRequest("UserId claim not found in token");
+            return BadRequest(new { message = "UserId claim not found in token" });
         }
 
         [HttpGet]
@@ -62,7 +62,7 @@ namespace ChatChit.Controllers
                     return NotFound("No friend request");
                 }
             }
-            return BadRequest("UserId claim not found in token");
+            return BadRequest(new { message = "UserId claim not found in token" });
         }
 
         [HttpPost]
@@ -79,7 +79,7 @@ namespace ChatChit.Controllers
                 await _friendService.HandleFriend(newFriend);
                 return Ok("Status: " + newFriend.status);
             };
-            return BadRequest("UserId claim not found in token");
+            return BadRequest(new { message = "UserId claim not found in token" });
         }
     }
 }

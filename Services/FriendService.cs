@@ -14,15 +14,15 @@ namespace ChatChit.Services
 
     public class FriendService : IFriendService
     {
-        private readonly ChatChitContex _contex;
-        public FriendService(ChatChitContex contex)
+        private readonly ChatChitContex _context;
+        public FriendService(ChatChitContex context)
         {
-            _contex = contex;
+            _context = context;
         }
 
         public async Task<List<UserResponseModel>> GetAllFriendOfUser(Guid currentUserId)
         {
-            var result = await _contex.Friends
+            var result = await _context.Friends
                 .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) 
                 && f.status == FriendModel.FriendStatus.Accepted)
                 .Select(f => f.userId == currentUserId ? f.Friend : f.User)
@@ -40,9 +40,12 @@ namespace ChatChit.Services
 
         public async Task<List<UserResponseModel>> GetPendingFriendOfUser(Guid currentUserId)
         {
-            var users = await _contex.Friends
-                .Where(f => (f.userId == currentUserId || f.friendId == currentUserId) 
-                && f.status == FriendModel.FriendStatus.Pending)
+            var users = await _context.Friends
+                .Where(f =>
+                    (f.userId == currentUserId || f.friendId == currentUserId)
+                    && f.status == FriendModel.FriendStatus.Pending
+                    && f.userId != currentUserId
+                )
                 .Select(f => f.userId == currentUserId ? f.Friend : f.User)
                 .Select(user => new UserResponseModel
                 {
@@ -58,7 +61,7 @@ namespace ChatChit.Services
 
         public async Task HandleFriend(FriendModel friend)
         {
-            var check = await _contex.Friends
+            var check = await _context.Friends
                         .FirstOrDefaultAsync(f =>
                             (f.userId == friend.userId && f.friendId == friend.friendId) ||
                             (f.userId == friend.friendId && f.friendId == friend.userId)
@@ -67,7 +70,7 @@ namespace ChatChit.Services
             {
                 if(friend.status == FriendModel.FriendStatus.Rejected)
                 {
-                    _contex.Friends.Remove(check);
+                    _context.Friends.Remove(check);
                 }
                 else
                 {
@@ -77,9 +80,9 @@ namespace ChatChit.Services
             else
             {
                 friend.status = FriendModel.FriendStatus.Pending;
-                _contex.Friends.Add(friend);
+                _context.Friends.Add(friend);
             }
-            await _contex.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using ChatChit.Data;
 using ChatChit.Models;
+using ChatChit.Models.RequestModel;
 
 namespace ChatChit.Hubs
 {

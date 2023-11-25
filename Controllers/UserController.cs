@@ -44,6 +44,17 @@ namespace ChatChit.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> AddUser([FromBody] CreateUserModel user)
         {
+            //var existingUserWithEmail = await _userService.GetUserByEmail(user.email);
+            //if (existingUserWithEmail != null)
+            //{
+            //    return BadRequest(new { message = "Email already exists" });
+            //}
+
+            //var existingUserWithNickname = await _userService.GetUserByNickname(user.nickName);
+            //if (existingUserWithNickname != null)
+            //{
+            //    return BadRequest(new { message = "Nickname already exists" });
+            //}
             var hashedPassword = BC.HashPassword(user.password);
             UserModel newUser = new UserModel();
             newUser.fullName = user.fullName;
@@ -73,7 +84,7 @@ namespace ChatChit.Controllers
                 }
                 return Ok(findUser);
             }
-            return BadRequest("UserId claim not found in token");
+            return BadRequest(new { message = "UserId claim not found in token" });
         }
 
         [HttpGet]
@@ -92,7 +103,7 @@ namespace ChatChit.Controllers
 
                 return Ok(result);
             }
-            return BadRequest("UserId claim not found in token");
+            return BadRequest(new { message = "UserId claim not found in token" });
         }
 
         [HttpPut]
@@ -109,10 +120,31 @@ namespace ChatChit.Controllers
                 }
                 else
                 {
-                    return NotFound("User not found");
+                    return NotFound(new { message = "User not found" });
                 }
             }
-            return BadRequest("UserId claim not found in token");
+            return BadRequest(new { message = "UserId claim not found in token" });
+        }
+
+        [HttpPut]
+        [Route("change-user-password")]
+        public async Task<IActionResult> ChangeUserPassword([FromBody] ChangePasswordRequestModel model)
+        {
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
+            {
+                Guid currentUserId = userId.Value;
+                StatusHelper changeResult = await _userService.ChangePassword(currentUserId, model.oldPassword, model.newPassword);
+                if (changeResult != null && changeResult.isSuccess == true)
+                {
+                    return Ok(new { message = changeResult.message });
+                }
+                else
+                {
+                    return NotFound(new { message = changeResult.message });
+                }
+            }
+            return BadRequest(new { message = "UserId claim not found in token" });
         }
     }
 }
