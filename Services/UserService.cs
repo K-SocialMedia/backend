@@ -53,7 +53,6 @@ namespace ChatChit.Repositories
                     fullName = u.fullName,
                     image = u.image,
 
-                    // Trả về trạng thái bạn bè thay vì isFriend
                     status = _context.Friends
                         .Where(f =>
                             (f.userId == currentUserId && f.friendId == u.id) ||
