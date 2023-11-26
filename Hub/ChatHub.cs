@@ -2,6 +2,7 @@
 using ChatChit.Data;
 using ChatChit.Models;
 using ChatChit.Models.RequestModel;
+using System.Security.Claims;
 
 namespace ChatChit.Hubs
 {
@@ -21,10 +22,14 @@ namespace ChatChit.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room);
         }
 
-        public async Task JoinRoomChat(ChatRoomModel userConnection)
+        public async Task JoinRoomChat(string id)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room + userConnection.User);
-            await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.User + userConnection.Room);
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{id}{userId}");
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{userId}{id}");
+            }
         }
 
         public async Task SendMessage(string message, string fromId, string toId, string Room)
