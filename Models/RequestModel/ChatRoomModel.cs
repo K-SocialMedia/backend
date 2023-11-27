@@ -4,5 +4,6 @@
     {
         public string? tokenUserId { get; set; }
         public string? friendId { get; set; }
+        public string? roomId { get; set;}
     }
 }
