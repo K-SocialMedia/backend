@@ -21,6 +21,7 @@ namespace ChatChit.Repositories
         public Task DeleteUser(UserModel deleteUser);
         public Task<StatusHelper> ChangePassword(Guid currentUserId, string oldPassword, string newPassword);
         public Task<bool> CheckUniqueEmail(string email);
+        public Task<UserResponseModel> GetUserInformation(Guid currentUserId);
     }
 
     public class UserService : IUserService
@@ -72,6 +73,24 @@ namespace ChatChit.Repositories
             return userResponse;
         }
 
+        public async Task<UserResponseModel> GetUserInformation(Guid currentUserId)
+        {
+            var user = await _context.Users.FindAsync(currentUserId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var userResponse = new UserResponseModel
+            {
+                id = user.id,
+                nickName = user.nickName,
+                fullName = user.fullName,
+                image = user.image,
+            };
+
+            return userResponse;
+        }
 
         public async Task<List<UserResponseModel>> GetUserByNickName(Guid currentUserId, string nickName)
         {

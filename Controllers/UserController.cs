@@ -93,6 +93,25 @@ namespace ChatChit.Controllers
         }
 
         [HttpGet]
+        [Route("get-user-information")]
+        public async Task<IActionResult> GetUserInformation()
+        {
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
+            {
+                Guid currentUserId = userId.Value;
+                UserResponseModel findUser = await _userService.GetUserInformation(currentUserId);
+                if (findUser == null)
+                {
+                    return NotFound(new { message = "Khong tim thay user" });
+                }
+                return Ok(findUser);
+            }
+            return BadRequest(new { message = "UserId claim not found in token" });
+        }
+
+
+        [HttpGet]
         [Route("get-user-by-nick-name")]
         public async Task<IActionResult> GetUserByNickName(string nickName)
         {
