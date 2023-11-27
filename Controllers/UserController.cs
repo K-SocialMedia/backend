@@ -56,6 +56,10 @@ namespace ChatChit.Controllers
             //{
             //    return BadRequest(new { message = "Nickname already exists" });
             //}
+            if (!await _userService.CheckUniqueEmail(user.email))
+            {
+                return BadRequest(new { message = "Email da ton tai" });
+            }
             var hashedPassword = BC.HashPassword(user.password);
             UserModel newUser = new UserModel();
             newUser.fullName = user.fullName;
@@ -72,7 +76,7 @@ namespace ChatChit.Controllers
 
         [HttpGet]
         [Route("get-user-by-id")]
-        public async Task<IActionResult> GetUserById([FromBody]Guid id)
+        public async Task<IActionResult> GetUserById([FromBody] Guid id)
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
@@ -81,7 +85,7 @@ namespace ChatChit.Controllers
                 UserResponseModel findUser = await _userService.GetUserById(currentUserId, id);
                 if (findUser == null)
                 {
-                    return NotFound(new {message = "Khong tim thay user"});
+                    return NotFound(new { message = "Khong tim thay user" });
                 }
                 return Ok(findUser);
             }
