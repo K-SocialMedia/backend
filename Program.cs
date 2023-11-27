@@ -20,14 +20,14 @@ namespace ChatChit
             builder.Services.AddControllers();
 
             //Connect Database
-            builder.Services.AddDbContext<ChatChitContex>(options =>
+            builder.Services.AddDbContext<ChatChitContext>(options =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
             });
 
             //AddScoped
             builder.Services.AddScoped<IUserService, UserService>();
-
+            builder.Services.AddScoped<IPostService, PostService>();
 
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IFriendService, FriendService>();

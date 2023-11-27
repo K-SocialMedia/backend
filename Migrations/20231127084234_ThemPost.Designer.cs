@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChatChit.Migrations
 {
     [DbContext(typeof(ChatChitContext))]
-    [Migration("20231116021304_ChatChit16.11")]
-    partial class ChatChit1611
+    [Migration("20231127084234_ThemPost")]
+    partial class ThemPost
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -50,6 +50,64 @@ namespace ChatChit.Migrations
                     b.HasIndex("userId");
 
                     b.ToTable("Friends");
+                });
+
+            modelBuilder.Entity("ChatChit.Models.Post.PostModel", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("content")
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("image")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("image");
+
+                    b.Property<Guid>("ownerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ownerId");
+
+                    b.Property<DateTime>("updatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("ChatChit.Models.TokenModel", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("token")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("token");
+
+                    b.Property<Guid>("userId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("ChatChit.Models.UserModel", b =>

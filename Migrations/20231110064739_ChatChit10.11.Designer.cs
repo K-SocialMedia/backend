@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ChatChit.Migrations
 {
-    [DbContext(typeof(ChatChitContex))]
+    [DbContext(typeof(ChatChitContext))]
     [Migration("20231110064739_ChatChit10.11")]
     partial class ChatChit1011
     {

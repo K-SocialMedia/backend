@@ -10,9 +10,9 @@ namespace ChatChit.Hubs
 {
     public class ChatHub : Hub
     {
-        private readonly ChatChitContex _context;
+        private readonly ChatChitContext _context;
 
-        public ChatHub(ChatChitContex context)
+        public ChatHub(ChatChitContext context)
         {
             _context = context;
         }
