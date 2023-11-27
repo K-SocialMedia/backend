@@ -3,6 +3,8 @@ using ChatChit.Data;
 using ChatChit.Models;
 using ChatChit.Models.RequestModel;
 using System.Security.Claims;
+using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ChatChit.Hubs
 {
@@ -15,35 +17,48 @@ namespace ChatChit.Hubs
             _context = context;
         }
 
-        public async Task JoinRoom(ChatRoomModel userConnection)
+        public async Task JoinRoom(string roomName)
         {
 
             //await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", "Khoi", $"{userConnection.User} has joined {userConnection.Room}");
-            await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room);
+            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
         }
 
-        public async Task JoinRoomChat(string id)
+        public async Task JoinRoomChat( ChatRoomModel model)
         {
-            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!string.IsNullOrEmpty(userId))
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadToken(model.tokenUserId) as JwtSecurityToken;
+
+            if (token != null)
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, $"{id}{userId}");
-                await Groups.AddToGroupAsync(Context.ConnectionId, $"{userId}{id}");
+                string userId = token.Claims.First(claim => claim.Type == "userId").Value;
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{userId}{model.friendId}");
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{model.friendId}{userId}");
             }
         }
 
-        public async Task SendMessage(string message, string fromId, string toId, string Room)
+        public async Task SendMessage(string message, ChatRoomModel model, string roomName)
         {
-            MessageModel messageModel = new MessageModel();
-            messageModel.content = message;
-            messageModel.createAt = DateTime.Now;
-            messageModel.senderId = fromId;
-            messageModel.receiverId = toId;
-            messageModel.isRead = false;
-            //_context.MessageMxhs.Add(mes);
-            //await _context.SaveChangesAsync();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadToken(model.tokenUserId) as JwtSecurityToken;
 
-            await Clients.OthersInGroup(Room).SendAsync("ReceiveMessage", messageModel.content, messageModel.senderId);
+            if (token != null)
+            {
+                string userId = token.Claims.First(claim => claim.Type == "userId").Value;
+
+                string newRoomName = roomName ?? $"{userId}{model.friendId}";
+
+                MessageModel messageModel = new MessageModel();
+                messageModel.content = message;
+                messageModel.createAt = DateTime.Now;
+                messageModel.senderId = userId;
+                messageModel.receiverId = model.friendId;
+                messageModel.isRead = false;
+                //_context.MessageMxhs.Add(mes);
+                //await _context.SaveChangesAsync();
+
+                await Clients.OthersInGroup(newRoomName).SendAsync("ReceiveMessage", messageModel );
+            }
         }
     }
 }

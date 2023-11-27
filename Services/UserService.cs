@@ -5,6 +5,7 @@ using ChatChit.Models.RequestModel;
 using ChatChit.Models.ResponseModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 using BC = BCrypt.Net.BCrypt;
 
 namespace ChatChit.Repositories
@@ -12,12 +13,13 @@ namespace ChatChit.Repositories
     public interface IUserService
     {
         public Task<List<UserModel>> GetAllUser();
-        public Task<UserModel> GetUserById(Guid currentUserId);
-        public Task<List<UserResponseModel>> GetUserByNickName(Guid currentUserId,string nickName);
+        public Task<UserResponseModel> GetUserById(Guid currentUserId, Guid id);
+        public Task<List<UserResponseModel>> GetUserByNickName(Guid currentUserId, string nickName);
+        public Task<List<UserModel>> GetRelatedFriend(Guid id);
         public Task<UserModel> AddUser(UserModel user);
         public Task<UserModel?> UpdateUser(Guid currentUserId, UserRequestModel user);
         public Task DeleteUser(UserModel deleteUser);
-        public Task<StatusHelper> ChangePassword(Guid currentUserId,string oldPassword, string newPassword);
+        public Task<StatusHelper> ChangePassword(Guid currentUserId, string oldPassword, string newPassword);
     }
 
     public class UserService : IUserService
@@ -35,11 +37,40 @@ namespace ChatChit.Repositories
             return users;
         }
 
-        public async Task<UserModel> GetUserById(Guid currentUserId)
+        public async Task<UserResponseModel> GetUserById(Guid currentUserId, Guid id)
         {
-            var user = await _context.Users.FindAsync(currentUserId);
-            return user;
+            var user = await _context.Users.FindAsync(id);
+            if (user == null || user.id == currentUserId)
+            {
+                return null;
+            }
+
+            var status = _context.Friends
+                .Any(f =>
+                    (f.userId == currentUserId && f.friendId == user.id) ||
+                    (f.userId == user.id && f.friendId == currentUserId)
+                )
+                ? _context.Friends
+                    .Where(f =>
+                        (f.userId == currentUserId && f.friendId == user.id) ||
+                        (f.userId == user.id && f.friendId == currentUserId)
+                    )
+                    .Select(f => f.status)
+                    .FirstOrDefault()
+                : FriendModel.FriendStatus.Rejected;
+
+            var userResponse = new UserResponseModel
+            {
+                id = user.id,
+                nickName = user.nickName,
+                fullName = user.fullName,
+                image = user.image,
+                status = status ?? FriendModel.FriendStatus.Rejected
+            };
+
+            return userResponse;
         }
+
 
         public async Task<List<UserResponseModel>> GetUserByNickName(Guid currentUserId, string nickName)
         {
@@ -114,7 +145,7 @@ namespace ChatChit.Repositories
                     _context.Users.Update(user);
                     await _context.SaveChangesAsync();
 
-                    return new StatusHelper{ isSuccess = true, message = "Mật khẩu đã được thay đổi thành công" };
+                    return new StatusHelper { isSuccess = true, message = "Mật khẩu đã được thay đổi thành công" };
                 }
                 else
                 {
@@ -122,7 +153,11 @@ namespace ChatChit.Repositories
                 }
             }
 
-            return new StatusHelper{ isSuccess = false, message = "Không tìm thấy người dùng" };
+            return new StatusHelper { isSuccess = false, message = "Không tìm thấy người dùng" };
+        }
+        public async Task<List<UserModel>> GetRelatedFriend(Guid id)
+        {
+            return null;
         }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using BC = BCrypt.Net.BCrypt;
 
@@ -71,16 +72,16 @@ namespace ChatChit.Controllers
 
         [HttpGet]
         [Route("get-user-by-id")]
-        public async Task<IActionResult> GetUserById()
+        public async Task<IActionResult> GetUserById([FromBody]Guid id)
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
-                UserModel findUser = await _userService.GetUserById(currentUserId);
+                UserResponseModel findUser = await _userService.GetUserById(currentUserId, id);
                 if (findUser == null)
                 {
-                    return NotFound();
+                    return NotFound(new {message = "Khong tim thay user"});
                 }
                 return Ok(findUser);
             }
@@ -146,5 +147,23 @@ namespace ChatChit.Controllers
             }
             return BadRequest(new { message = "UserId claim not found in token" });
         }
+        [HttpGet]
+        [Route("get-related-friend")]
+        public async Task<IActionResult> GetRelatedFriend()
+        {
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
+            {
+                Guid currentUserId = userId.Value;
+
+                // Gọi phương thức từ service để lấy danh sách người dùng gần đây nhất nhưng chưa kết bạn
+                var relatedFriends = await _userService.GetRelatedFriend(currentUserId);
+
+                return Ok(relatedFriends);
+            }
+
+            return BadRequest(new { message = "UserId claim not found in token" });
+        }
+
     }
 }

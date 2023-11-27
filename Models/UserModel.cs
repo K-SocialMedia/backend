@@ -23,6 +23,5 @@ namespace ChatChit.Models
         public DateTime createdAt { get; set; }
         [Column("updated_at")]
         public DateTime updatedAt { get; set;}
-            
     }
 }
