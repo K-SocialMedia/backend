@@ -20,6 +20,7 @@ namespace ChatChit.Repositories
         public Task<UserModel?> UpdateUser(Guid currentUserId, UserRequestModel user);
         public Task DeleteUser(UserModel deleteUser);
         public Task<StatusHelper> ChangePassword(Guid currentUserId, string oldPassword, string newPassword);
+        public Task<bool> CheckUniqueEmail(string email);
     }
 
     public class UserService : IUserService
@@ -158,6 +159,13 @@ namespace ChatChit.Repositories
         public async Task<List<UserModel>> GetRelatedFriend(Guid id)
         {
             return null;
+        }
+
+        public async Task<bool> CheckUniqueEmail(string email)
+        {
+            var userWithEmail = await _context.Users.FirstOrDefaultAsync(u => u.email == email);
+
+            return userWithEmail == null;
         }
     }
 }
