@@ -17,10 +17,10 @@ namespace ChatChit.Services
 
     public class LoginService : ILoginService
     {
-        private readonly ChatChitContex _context;
+        private readonly ChatChitContext _context;
         private readonly IConfiguration _config;
 
-        public LoginService(ChatChitContex context, IConfiguration config)
+        public LoginService(ChatChitContext context, IConfiguration config)
         {
             _context = context;
             _config = config;

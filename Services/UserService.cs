@@ -24,9 +24,9 @@ namespace ChatChit.Repositories
 
     public class UserService : IUserService
     {
-        private readonly ChatChitContex _context;
+        private readonly ChatChitContext _context;
 
-        public UserService(ChatChitContex context)
+        public UserService(ChatChitContext context)
         {
             _context = context;
         }

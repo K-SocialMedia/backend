@@ -10,11 +10,13 @@ namespace ChatChit.Models.Post
         public Guid id { get; set; }
         [Column ("ownerId")]
         public Guid ownerId { get; set; }
+        [Column ("content")]
         public string? content { get; set; }
+        [Column ("image")]
+        public string image { get; set; }
         [Column("created_at")]
-        public DateTime createAt { get; set; }
-        [Column("update_at")]
-        public DateTime updateAt { get; set; }
-
+        public DateTime createdAt { get; set; }
+        [Column("updated_at")]
+        public DateTime updatedAt { get; set; }
     }
 }

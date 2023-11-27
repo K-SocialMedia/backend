@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ChatChit.Migrations
 {
-    [DbContext(typeof(ChatChitContex))]
+    [DbContext(typeof(ChatChitContext))]
     partial class ChatChitContexModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -48,6 +48,39 @@ namespace ChatChit.Migrations
                     b.HasIndex("userId");
 
                     b.ToTable("Friends");
+                });
+
+            modelBuilder.Entity("ChatChit.Models.Post.PostModel", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("content")
+                        .HasColumnType("text")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("image")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("image");
+
+                    b.Property<Guid>("ownerId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ownerId");
+
+                    b.Property<DateTime>("updatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("ChatChit.Models.TokenModel", b =>

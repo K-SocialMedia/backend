@@ -14,8 +14,8 @@ namespace ChatChit.Services
 
     public class FriendService : IFriendService
     {
-        private readonly ChatChitContex _context;
-        public FriendService(ChatChitContex context)
+        private readonly ChatChitContext _context;
+        public FriendService(ChatChitContext context)
         {
             _context = context;
         }
