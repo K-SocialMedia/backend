@@ -15,7 +15,7 @@ namespace ChatChit.Repositories
         public Task<List<UserModel>> GetAllUser();
         public Task<UserResponseModel> GetUserById(Guid currentUserId, Guid id);
         public Task<List<UserResponseModel>> GetUserByNickName(Guid currentUserId, string nickName);
-        public Task<List<UserModel>> GetRelatedFriend(Guid id);
+        public Task<List<UserResponseModel>> GetRelatedFriend(Guid id);
         public Task<UserModel> AddUser(UserModel user);
         public Task<UserModel?> UpdateUser(Guid currentUserId, UserRequestModel user);
         public Task DeleteUser(UserModel deleteUser);
@@ -175,9 +175,27 @@ namespace ChatChit.Repositories
 
             return new StatusHelper { isSuccess = false, message = "Không tìm thấy người dùng" };
         }
-        public async Task<List<UserModel>> GetRelatedFriend(Guid id)
+        public async Task<List<UserResponseModel>> GetRelatedFriend(Guid currentUserId)
         {
-            return null;
+            var users = await _context.Users
+                .Where(u => u.id != currentUserId &&
+                            !_context.Friends.Any(f =>
+                                (f.userId == currentUserId && f.friendId == u.id) ||
+                                (f.userId == u.id && f.friendId == currentUserId)
+                            ))
+                .OrderByDescending(u => u.createdAt)
+                .Take(10)
+                .Select(u => new UserResponseModel
+                {
+                    id = u.id,
+                    nickName = u.nickName,
+                    fullName = u.fullName,
+                    image = u.image,
+                    status = FriendModel.FriendStatus.Rejected
+                })
+                .ToListAsync();
+
+            return users;
         }
 
         public async Task<bool> CheckUniqueEmail(string email)

@@ -2,6 +2,7 @@
 using ChatChit.Models.Post;
 using ChatChit.Models.RequestModel;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace ChatChit.Services
 {
@@ -10,6 +11,7 @@ namespace ChatChit.Services
         public Task<List<PostModel>> GetAllPostById(Guid id);
         public Task<PostModel> AddPost(Guid id, PostRequestModel post);
         public Task<bool> DeletePost(Guid currentUserId, Guid postId);
+        public Task<List<PostModel>> GetAllPost();
     }
     public class PostService:IPostService
     {
@@ -50,6 +52,15 @@ namespace ChatChit.Services
                 }
             }
             return false;
+        }
+
+        public async Task<List<PostModel>> GetAllPost()
+        {
+            var latestPosts = await _context.Posts.OrderByDescending(p => p.createdAt)
+                                     .Take(10)
+                                     .ToListAsync();
+
+            return latestPosts;
         }
     }
 }

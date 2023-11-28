@@ -178,11 +178,12 @@ namespace ChatChit.Controllers
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
-
                 // Gọi phương thức từ service để lấy danh sách người dùng gần đây nhất nhưng chưa kết bạn
                 var relatedFriends = await _userService.GetRelatedFriend(currentUserId);
-
+                if(relatedFriends != null)
+                {
                 return Ok(relatedFriends);
+                }return NotFound(new { message = "Chua tim thay ban moi" });
             }
 
             return BadRequest(new { message = "UserId claim not found in token" });

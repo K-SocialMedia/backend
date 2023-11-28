@@ -64,5 +64,17 @@ namespace ChatChit.Controllers
             }
             return BadRequest(new { message = "UserId claim not found in token" });
         }
+
+        [HttpGet]
+        [Route ("get-all-post")]
+        public async Task<IActionResult> GetAllPost()
+        {
+           List<PostModel> posts = await _postService.GetAllPost();
+            if (posts != null)
+            {
+                return Ok(posts);
+            }
+            return NotFound(new { message = "Khong tim thay post" });
+        }
     }
 }
