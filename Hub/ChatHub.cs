@@ -66,12 +66,12 @@ namespace ChatChit.Hubs
 
             if (token != null)
             {
-                string userId = token.Claims.First(claim => claim.Type == "userId").Value;
+                Guid userId = Guid.Parse(token.Claims.First(claim => claim.Type == "userId").Value);
 
                 if (string.IsNullOrEmpty(model.roomId))
                 {
                     // Nếu không có roomName, đây là chat đơn
-                    await SendDirectMessage(message, userId, model.friendId);
+                    await SendDirectMessage(message, userId, model.friendId ?? Guid.NewGuid());
                 }
                 else
                 {
@@ -81,22 +81,32 @@ namespace ChatChit.Hubs
             }
         }
 
-        private async Task SendDirectMessage(string message, string senderId, string receiverId)
+        private async Task SendDirectMessage(string message, Guid senderId, Guid receiverId)
         {
             MessageModel messageModel = new MessageModel();
             messageModel.content = message;
-            messageModel.createAt = DateTime.Now;
+            messageModel.createAt = DateTime.UtcNow;
             messageModel.senderId = senderId;
             messageModel.receiverId = receiverId;
             messageModel.isRead = false;
 
-            //_context.MessageMxhs.Add(messageModel);
-            //await _context.SaveChangesAsync();
-
             await Clients.OthersInGroup($"{senderId}{receiverId}").SendAsync("ReceiveMessage", messageModel);
+
+            try
+            {
+
+                _context.Messages.Add(messageModel);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                Console.WriteLine($"Error saving message to the database: {ex.Message}");
+                // You might want to throw the exception here or handle it according to your application's logic
+            }
         }
 
-        private async Task SendGroupMessage(string message, string roomName, string senderId)
+        private async Task SendGroupMessage(string message, string roomName, Guid senderId)
         {
             MessageModel messageModel = new MessageModel();
             messageModel.content = message;

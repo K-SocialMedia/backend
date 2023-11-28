@@ -14,7 +14,7 @@ namespace ChatChit
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            
+
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -28,7 +28,7 @@ namespace ChatChit
             //AddScoped
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IPostService, PostService>();
-
+            builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IFriendService, FriendService>();
 
