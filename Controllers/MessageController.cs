@@ -1,4 +1,5 @@
 ﻿using ChatChit.Helpers;
+using ChatChit.Models;
 using ChatChit.Models.ResponseModel;
 using ChatChit.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -19,13 +20,13 @@ namespace ChatChit.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMessage([FromBody] Guid id)
+        public async Task<IActionResult> GetMessage([FromBody] DataUserId id)
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
-                var messages = await _messageService.GetMessageNearly(currentUserId, id);
+                var messages = await _messageService.GetMessageNearly(currentUserId, id.id);
                 if (messages == null || messages.Count == 0)
                 {
                     return NotFound(new { message = "Chưa có tin nhắn" });
