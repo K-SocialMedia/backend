@@ -1,4 +1,5 @@
 ﻿using ChatChit.Helpers;
+using ChatChit.Models;
 using ChatChit.Models.Post;
 using ChatChit.Models.RequestModel;
 using ChatChit.Models.ResponseModel;
@@ -69,7 +70,7 @@ namespace ChatChit.Controllers
         [Route ("get-all-post")]
         public async Task<IActionResult> GetAllPost()
         {
-           List<PostModel> posts = await _postService.GetAllPost();
+           List<PostWithUserInfo> posts = await _postService.GetAllPost();
             if (posts != null)
             {
                 return Ok(posts);
