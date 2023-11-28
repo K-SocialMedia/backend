@@ -31,9 +31,9 @@ namespace ChatChit.Controllers
                 List<PostModel> posts = await _postService.GetAllPostById(currentUserId);
                 if (posts != null)
                 {
-                    return NotFound(new { message = "Khong tim thay post" });
+                    return Ok(posts);
                 }
-                return Ok(posts);
+                return NotFound(new { message = "Khong tim thay post" });
             }
             return BadRequest(new { message = "UserId claim not found in token" });
         }
