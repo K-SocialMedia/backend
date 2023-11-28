@@ -87,6 +87,7 @@ namespace ChatChit.Repositories
                 nickName = user.nickName,
                 fullName = user.fullName,
                 image = user.image,
+                email = user.email,
             };
 
             return userResponse;
