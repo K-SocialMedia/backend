@@ -3,7 +3,7 @@
     public class ChatRoomModel
     {
         public string? tokenUserId { get; set; }
-        public string? friendId { get; set; }
-        public string? roomId { get; set;}
+        public Guid? friendId { get; set; }
+        public string? roomId { get; set; }
     }
 }
