@@ -5,6 +5,7 @@ namespace ChatChit.Models
 {
     public class PostWithUserInfo
     {
+        public Guid id { get; set; }
         public string content { get; set; }
         public string image { get; set; }
         public string fullName { get; set; }
