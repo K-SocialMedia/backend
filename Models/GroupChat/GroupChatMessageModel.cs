@@ -12,6 +12,8 @@ namespace ChatChit.Models.GroupChat
         public Guid senderId { get; set; }
         [Column("image")]
         public string? image { get; set; }
+        [Column ("group_id")]
+        public Guid groupId { get; set; }
         [Column("content")]
         public string content { get; set; }
         [Column("create_at")]

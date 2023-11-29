@@ -6,6 +6,8 @@ using System.Security.Claims;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using ChatChit.Models.ResponseModel;
+using static System.Net.Mime.MediaTypeNames;
+using ChatChit.Models.GroupChat;
 
 namespace ChatChit.Hubs
 {
@@ -30,10 +32,10 @@ namespace ChatChit.Hubs
         }
 
 
-        public async Task JoinRoom(string roomName)
+        public async Task JoinRoom(string roomId)
         {
             //await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", "Khoi", $"{userConnection.User} has joined {userConnection.Room}");
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
+            await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
         }
 
         public async Task JoinRoomChat(ChatRoomModel model)
@@ -73,7 +75,7 @@ namespace ChatChit.Hubs
         //        await Clients.OthersInGroup(newRoomName).SendAsync("ReceiveMessage", messageModel);
         //    }
         //}
-        public async Task SendMessage(string message, string image ,ChatRoomModel model)
+        public async Task SendMessage(string message, string image, ChatRoomModel model)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.ReadToken(model.tokenUserId) as JwtSecurityToken;
@@ -90,7 +92,7 @@ namespace ChatChit.Hubs
                 else
                 {
                     // Nếu có roomName, đây là chat group
-                    await SendGroupMessage(message, model.roomId, userId);
+                    await SendGroupMessage(message, image, Guid.Parse(model.roomId), userId);
                 }
             }
         }
@@ -98,7 +100,7 @@ namespace ChatChit.Hubs
         private async Task SendDirectMessage(string message, string image, Guid senderId, Guid receiverId)
         {
             MessageModel messageModel = new MessageModel();
-            if(image != null)
+            if (image != null)
             {
                 messageModel.image = image;
             }
@@ -143,18 +145,36 @@ namespace ChatChit.Hubs
             await Clients.Group(receiverId.ToString()).SendAsync("Noti", messageresponse);
         }
 
-        private async Task SendGroupMessage(string message, string roomName, Guid senderId)
+        private async Task SendGroupMessage(string message, string image, Guid roomId, Guid senderId)
         {
-            MessageModel messageModel = new MessageModel();
+            GroupChatMessageModel messageModel = new GroupChatMessageModel();
+            if (image != null)
+            {
+                messageModel.image = image;
+            }
+            else
+            {
+                messageModel.image = null;
+            }
+            messageModel.groupId = roomId;
             messageModel.content = message;
-            messageModel.createAt = DateTime.Now;
+            messageModel.createAt = DateTime.UtcNow;
             messageModel.senderId = senderId;
             messageModel.isRead = false;
-
+            var sender = await _context.Users.FindAsync(messageModel.senderId);
+            MessageGroupResponseModel messageResponse = new MessageGroupResponseModel
+            {
+                id = messageModel.id,
+                senderId = messageModel.senderId,
+                senderName = sender.nickName,
+                content = messageModel.content,
+                image = messageModel.image,
+                createAt = messageModel.createAt,
+            };
             //_context.MessageMxhs.Add(messageModel);
             //await _context.SaveChangesAsync();
 
-            await Clients.OthersInGroup(roomName).SendAsync("ReceiveMessage", messageModel);
+            await Clients.OthersInGroup(roomId.ToString()).SendAsync("ReceiveMessage", messageResponse);
         }
     }
 }
