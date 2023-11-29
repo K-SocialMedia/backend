@@ -130,7 +130,7 @@ namespace ChatChit.Hubs
                 Console.WriteLine($"Error saving message to the database: {ex.Message}");
                 // You might want to throw the exception here or handle it according to your application's logic
             }
-            await Clients.Group(receiverId.ToString()).SendAsync("Noti", message);
+            await Clients.Group(receiverId.ToString()).SendAsync("Noti", messageresponse);
         }
 
         private async Task SendGroupMessage(string message, string roomName, Guid senderId)
