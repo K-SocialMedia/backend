@@ -22,8 +22,8 @@ namespace ChatChit.Services
             var messages = await _context.Messages
                  .Where(m => (m.senderId == currentUserId && m.receiverId == friendId) ||
                    (m.senderId == friendId && m.receiverId == currentUserId))
-                .OrderByDescending(m => m.createAt)
-                .Take(5)
+                .OrderBy(m => m.createAt)
+                .TakeLast(5)
                  .ToListAsync();
             var messageResponseList = new List<MessageResponseModel>();
 
