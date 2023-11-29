@@ -35,6 +35,14 @@ namespace ChatChit.Hubs
         public async Task JoinRoom(ChatRoomModel model)
         {
             //await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", "Khoi", $"{userConnection.User} has joined {userConnection.Room}");
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadToken(model.tokenUserId) as JwtSecurityToken;
+
+            if (token != null)
+            {
+                string userId = token.Claims.First(claim => claim.Type == "userId").Value;
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{userId}");
+            }
             await Groups.AddToGroupAsync(Context.ConnectionId, model.roomId);
         }
 
@@ -171,10 +179,18 @@ namespace ChatChit.Hubs
                 image = messageModel.image,
                 createAt = messageModel.createAt,
             };
+            await Clients.OthersInGroup(roomId.ToString()).SendAsync("ReceiveMessage", messageResponse);
             //_context.MessageMxhs.Add(messageModel);
             //await _context.SaveChangesAsync();
+            var groupMembers = _context.GroupChatMembers
+                .Where(m => m.groupId == roomId)
+                .Select(m => m.userId)
+                .ToList();
 
-            await Clients.OthersInGroup(roomId.ToString()).SendAsync("ReceiveMessage", messageResponse);
+            foreach(Guid gm in groupMembers)
+            {
+                await Clients.Group(gm.ToString()).SendAsync("Noti", messageResponse);
+            }
         }
     }
 }
