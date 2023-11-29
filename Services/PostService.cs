@@ -66,6 +66,7 @@ namespace ChatChit.Services
              u => u.id,
              (p, u) => new PostWithUserInfo
              {
+                 id = p.id,
                  content = p.content,
                  image = p.image,
                  fullName = u.fullName,
