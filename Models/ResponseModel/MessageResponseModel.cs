@@ -7,6 +7,7 @@ namespace ChatChit.Models.ResponseModel
         public int id { get; set; }
         public Guid senderId { get; set; }
         public string senderName { get; set; }
+        public Guid receiverId { get; set; }
         public string receiverName { get; set; }
         public string content { get; set; }
         public DateTime createAt { get; set; }
