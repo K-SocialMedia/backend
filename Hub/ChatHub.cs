@@ -18,6 +18,8 @@ namespace ChatChit.Hubs
             _context = context;
         }
 
+
+
         public async Task JoinRoom(string roomName)
         {
             //await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", "Khoi", $"{userConnection.User} has joined {userConnection.Room}");
@@ -32,6 +34,7 @@ namespace ChatChit.Hubs
             if (token != null)
             {
                 string userId = token.Claims.First(claim => claim.Type == "userId").Value;
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{userId}");
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{userId}{model.friendId}");
                 await Groups.AddToGroupAsync(Context.ConnectionId, $"{model.friendId}{userId}");
             }
@@ -72,7 +75,7 @@ namespace ChatChit.Hubs
                 if (string.IsNullOrEmpty(model.roomId))
                 {
                     // Nếu không có roomName, đây là chat đơn
-                    await SendDirectMessage(message, image, userId, model.friendId ?? Guid.NewGuid(), model.tokenUserId);
+                    await SendDirectMessage(message, image, userId, model.friendId ?? Guid.NewGuid());
                 }
                 else
                 {
@@ -82,7 +85,7 @@ namespace ChatChit.Hubs
             }
         }
 
-        private async Task SendDirectMessage(string message, string image, Guid senderId, Guid receiverId, string Token)
+        private async Task SendDirectMessage(string message, string image, Guid senderId, Guid receiverId)
         {
             MessageModel messageModel = new MessageModel();
             if(image != null)
@@ -127,7 +130,7 @@ namespace ChatChit.Hubs
                 Console.WriteLine($"Error saving message to the database: {ex.Message}");
                 // You might want to throw the exception here or handle it according to your application's logic
             }
-            await Clients.All.SendAsync("Noti", Token, message);
+            await Clients.Group(senderId.ToString()).SendAsync("Noti", message);
         }
 
         private async Task SendGroupMessage(string message, string roomName, Guid senderId)
