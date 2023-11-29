@@ -42,6 +42,7 @@ namespace ChatChit.Services
                         receiverId = message.receiverId,
                         receiverName = receiver.nickName,
                         content = message.content,
+                        image = message.image,
                         createAt = message.createAt,
                         isRead = message.isRead,
                     };
