@@ -71,7 +71,7 @@ namespace ChatChit.Controllers
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
-                var result = await _messageGroupService.GetGroup(currentUserId);
+                var result = await _messageGroupService.GetGroup(id);
                 if (result != null)
                 {
                     return Ok(result);

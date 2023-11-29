@@ -142,7 +142,7 @@ namespace ChatChit.Services
         }
         public async Task<GroupWithUserResponseModel> GetGroup(Guid groupId)
         {
-            var group = await _context.GroupChats.FindAsync(groupId);
+                var group = await _context.GroupChats.FindAsync(groupId);
 
             if (group == null)
             {
