@@ -62,5 +62,23 @@ namespace ChatChit.Controllers
             }
             return BadRequest(new { message = "UserId claim not found in token" });
         }
+
+        [HttpGet]
+        [Route("get-message")]
+        public async Task<IActionResult> GetMessage(Guid groupId)
+        {
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
+            {
+                Guid currentUserId = userId.Value;
+                var messages = await _messageGroupService.GetGroupMessages(currentUserId, groupId);
+                if (messages == null || messages.Count == 0)
+                {
+                    return NotFound(new { message = "Chưa có tin nhắn" });
+                }
+                return Ok(messages);
+            }
+            return BadRequest(new { message = "UserId claim not found in token" });
+        }
     }
 }

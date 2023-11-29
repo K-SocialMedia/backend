@@ -11,6 +11,7 @@ namespace ChatChit.Services
     {
         public Task<StatusHelper> AddGroup(GroupWithUserRequestModel groupWithUser);
         public Task<List<GroupWithUserResponseModel>> GetGroupsForUser(Guid userId);
+        public Task<List<MessageGroupResponseModel>> GetGroupMessages(Guid currentUserId, Guid groupId);
     }
     public class MessageGroupService : IMessageGroupService
     {
@@ -96,5 +97,47 @@ namespace ChatChit.Services
 
             return groupDetails;
         }
+
+        public async Task<List<MessageGroupResponseModel>> GetGroupMessages(Guid currentUserId, Guid groupId)
+        {
+            var group = await _context.GroupChats.FindAsync(groupId);
+
+            if (group == null)
+            {
+                return null;
+            }
+
+            var rawMessages = await _context.GroupChatMessages
+                .Where(m => m.groupId == groupId)
+                .OrderBy(m => m.createAt)
+                .ToListAsync();
+
+            var messages = rawMessages.TakeLast(10).OrderBy(m => m.createAt).ToList();
+
+            var messageResponseList = new List<MessageGroupResponseModel>();
+
+            foreach (var message in messages)
+            {
+                var sender = await _context.Users.FindAsync(message.senderId);
+
+                if (sender != null)
+                {
+                    var messageResponse = new MessageGroupResponseModel
+                    {
+                        id = message.id,
+                        senderId = message.senderId,
+                        senderName = sender.nickName,
+                        content = message.content,
+                        image = message.image,
+                        createAt = message.createAt,
+                        isRead = message.isRead,
+                    };
+
+                    messageResponseList.Add(messageResponse);
+                }
+            }
+            return messageResponseList;
+        }
+
     }
 }
