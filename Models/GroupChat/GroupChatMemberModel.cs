@@ -7,6 +7,12 @@ namespace ChatChit.Models.GroupChat
     {
         [Key]
         [Column("id")]
-        public Guid id;
+        public Guid id { get; set; }
+
+        [Column("user_id")]
+        public Guid userId { get; set; }
+
+        [Column("group_id")]
+        public Guid groupId { get; set; }
     }
 }
