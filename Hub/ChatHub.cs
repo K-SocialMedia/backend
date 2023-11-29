@@ -72,7 +72,7 @@ namespace ChatChit.Hubs
                 if (string.IsNullOrEmpty(model.roomId))
                 {
                     // Nếu không có roomName, đây là chat đơn
-                    await SendDirectMessage(message, image, userId, model.friendId ?? Guid.NewGuid());
+                    await SendDirectMessage(message, image, userId, model.friendId ?? Guid.NewGuid(), model.tokenUserId);
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace ChatChit.Hubs
             }
         }
 
-        private async Task SendDirectMessage(string message, string image, Guid senderId, Guid receiverId)
+        private async Task SendDirectMessage(string message, string image, Guid senderId, Guid receiverId, string Token)
         {
             MessageModel messageModel = new MessageModel();
             if(image != null)
@@ -127,8 +127,7 @@ namespace ChatChit.Hubs
                 Console.WriteLine($"Error saving message to the database: {ex.Message}");
                 // You might want to throw the exception here or handle it according to your application's logic
             }
-            Console.WriteLine(Clients.All);
-            await Clients.All.SendAsync("Noti", Clients.All, message);
+            await Clients.All.SendAsync("Noti", Token, message);
         }
 
         private async Task SendGroupMessage(string message, string roomName, Guid senderId)
