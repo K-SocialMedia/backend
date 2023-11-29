@@ -10,6 +10,8 @@ namespace ChatChit.Models
         public Guid senderId { get; set; }
         [Column("receiver_id")]
         public Guid receiverId { get; set; }
+        [Column ("image")]
+        public string? image {  get; set; }
         [Column("content")]
         public string content { get; set; }
         [Column("create_at")]

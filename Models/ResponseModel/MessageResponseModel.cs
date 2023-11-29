@@ -10,6 +10,7 @@ namespace ChatChit.Models.ResponseModel
         public Guid receiverId { get; set; }
         public string receiverName { get; set; }
         public string content { get; set; }
+        public string image {  get; set; }
         public DateTime createAt { get; set; }
         public bool isRead { get; set; }
     }

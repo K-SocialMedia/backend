@@ -60,7 +60,7 @@ namespace ChatChit.Hubs
         //        await Clients.OthersInGroup(newRoomName).SendAsync("ReceiveMessage", messageModel);
         //    }
         //}
-        public async Task SendMessage(string message, ChatRoomModel model)
+        public async Task SendMessage(string message, string image ,ChatRoomModel model)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.ReadToken(model.tokenUserId) as JwtSecurityToken;
@@ -72,7 +72,7 @@ namespace ChatChit.Hubs
                 if (string.IsNullOrEmpty(model.roomId))
                 {
                     // Nếu không có roomName, đây là chat đơn
-                    await SendDirectMessage(message, userId, model.friendId ?? Guid.NewGuid());
+                    await SendDirectMessage(message, image, userId, model.friendId ?? Guid.NewGuid());
                 }
                 else
                 {
@@ -82,9 +82,17 @@ namespace ChatChit.Hubs
             }
         }
 
-        private async Task SendDirectMessage(string message, Guid senderId, Guid receiverId)
+        private async Task SendDirectMessage(string message, string image, Guid senderId, Guid receiverId)
         {
             MessageModel messageModel = new MessageModel();
+            if(image != null)
+            {
+                messageModel.image = image;
+            }
+            else
+            {
+                messageModel.image = null;
+            }
             messageModel.content = message;
             messageModel.createAt = DateTime.UtcNow;
             messageModel.senderId = senderId;
@@ -102,8 +110,8 @@ namespace ChatChit.Hubs
                 senderName = sender.nickName,
                 receiverName = receiver.nickName,
                 content = messageModel.content,
-                createAt = messageModel.createAt
-
+                image = messageModel.image,
+                createAt = messageModel.createAt,
             };
             await Clients.OthersInGroup($"{senderId}{receiverId}").SendAsync("ReceiveMessage", messageresponse);
 
