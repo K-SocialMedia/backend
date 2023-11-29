@@ -17,7 +17,17 @@ namespace ChatChit.Hubs
         {
             _context = context;
         }
+        public async Task JoinHub(string userToken)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.ReadToken(userToken) as JwtSecurityToken;
 
+            if (token != null)
+            {
+                string userId = token.Claims.First(claim => claim.Type == "userId").Value;
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"{userId}");
+            }
+        }
 
 
         public async Task JoinRoom(string roomName)
