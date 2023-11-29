@@ -1,12 +1,13 @@
 ﻿using ChatChit.Data;
 using ChatChit.Models;
+using ChatChit.Models.ResponseModel;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatChit.Services
 {
     public interface IMessageService
     {
-        public Task<List<MessageModel>> GetMessageNearly(Guid currentUserId, Guid friendId);
+        public Task<List<MessageResponseModel>> GetMessageNearly(Guid currentUserId, Guid friendId);
     }
     public class MessageService : IMessageService
     {
@@ -15,16 +16,37 @@ namespace ChatChit.Services
         {
             _context = context;
         }
-        public async Task<List<MessageModel>> GetMessageNearly(Guid currentUserId, Guid friendId)
+        public async Task<List<MessageResponseModel>> GetMessageNearly(Guid currentUserId, Guid friendId)
         {
+            var user = await _context.Users.FindAsync(friendId);
             var messages = await _context.Messages
                  .Where(m => (m.senderId == currentUserId && m.receiverId == friendId) ||
                    (m.senderId == friendId && m.receiverId == currentUserId))
                 .OrderByDescending(m => m.createAt)
                 .Take(5)
                  .ToListAsync();
+            var messageResponseList = new List<MessageResponseModel>();
 
-            return messages;
+            foreach (var message in messages)
+            {
+                var receiver = await _context.Users.FindAsync(message.receiverId);
+
+                if (receiver != null)
+                {
+                    var messageResponse = new MessageResponseModel
+                    {
+                        id = message.id,
+                        senderId = message.senderId,
+                        content = message.content,
+                        receiverName = receiver.nickName,
+                        createAt = message.createAt,
+                        isRead = message.isRead,
+                    };
+
+                    messageResponseList.Add(messageResponse);
+                }
+            }
+            return messageResponseList;
         }
     }
 }
