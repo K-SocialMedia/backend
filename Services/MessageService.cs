@@ -19,12 +19,13 @@ namespace ChatChit.Services
         public async Task<List<MessageResponseModel>> GetMessageNearly(Guid currentUserId, Guid friendId)
         {
             var user = await _context.Users.FindAsync(friendId);
-            var messages = await _context.Messages
+            var rawMessages = await _context.Messages
                  .Where(m => (m.senderId == currentUserId && m.receiverId == friendId) ||
                    (m.senderId == friendId && m.receiverId == currentUserId))
                 .OrderBy(m => m.createAt)
-                .TakeLast(5)
                  .ToListAsync();
+            var messages = rawMessages.TakeLast(5).OrderBy(m => m.createAt).ToList();
+
             var messageResponseList = new List<MessageResponseModel>();
 
             foreach (var message in messages)
