@@ -19,8 +19,8 @@ namespace ChatChit.Controllers
             _messageService = messageService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetMessage([FromBody] Guid id)
+        [HttpGet]
+        public async Task<IActionResult> GetMessage(Guid id)
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
