@@ -28,6 +28,7 @@ namespace ChatChit.Services
                {
                    content = c.content,
                    ownerName = c.User.nickName,
+                   ownerImage = c.User.image,
                    createdAt = c.createdAt
                })
                .ToListAsync();
