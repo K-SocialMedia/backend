@@ -54,9 +54,9 @@ namespace ChatChit.Services
         public async Task<List<GroupWithUserResponseModel>> GetGroupsForUser(Guid userId)
         {
             var userGroups = await _context.GroupChatMembers
-                   .Where(gcm => gcm.userId == userId)
-                   .Select(gcm => gcm.groupId)
-                   .ToListAsync();
+       .Where(gcm => gcm.userId == userId)
+       .Select(gcm => gcm.groupId)
+       .ToListAsync();
 
             var groups = await _context.GroupChats
                 .Where(gc => userGroups.Contains(gc.id))
@@ -71,15 +71,29 @@ namespace ChatChit.Services
                     .Select(gcm => gcm.userId)
                     .ToListAsync();
 
+                var users = await _context.Users
+                    .Where(u => groupMembers.Contains(u.id))
+                    .ToListAsync();
+
+                var userModels = users.Select(u => new UserResponseModel2
+                {
+                    id = u.id,
+                    fullName = u.fullName,
+                    image = u.image,
+                    nickName = u.nickName,
+                    email = u.email
+                }).ToList();
+
                 var groupDetail = new GroupWithUserResponseModel
                 {
                     id = group.id,
                     groupName = group.groupName,
-                    userId = groupMembers
+                    users = userModels
                 };
 
                 groupDetails.Add(groupDetail);
             }
+
             return groupDetails;
         }
     }

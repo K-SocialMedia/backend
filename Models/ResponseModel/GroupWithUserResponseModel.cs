@@ -4,6 +4,6 @@
     {
         public Guid id { get; set; }
         public string groupName { get; set; }
-        public List<Guid> userId { get; set; }
+        public List<UserResponseModel2> users { get; set; }
     }
 }
