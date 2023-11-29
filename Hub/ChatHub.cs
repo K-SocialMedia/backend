@@ -181,8 +181,8 @@ namespace ChatChit.Hubs
                 createAt = messageModel.createAt,
             };
             await Clients.OthersInGroup(roomId.ToString()).SendAsync("ReceiveMessage", messageResponse);
-            //_context.MessageMxhs.Add(messageModel);
-            //await _context.SaveChangesAsync();
+            _context.GroupChatMessages.Add(messageModel);
+            await _context.SaveChangesAsync();
             var groupMembers = _context.GroupChatMembers
                 .Where(m => m.groupId == roomId)
                 .Select(m => m.userId)
