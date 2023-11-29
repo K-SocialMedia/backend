@@ -131,6 +131,7 @@ namespace ChatChit.Services
                         image = message.image,
                         createAt = message.createAt,
                         isRead = message.isRead,
+                        senderImage = sender.image,
                     };
 
                     messageResponseList.Add(messageResponse);
