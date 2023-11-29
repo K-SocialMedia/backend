@@ -19,14 +19,14 @@ namespace ChatChit.Controllers
             _messageService = messageService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetMessage([FromBody] DataUserId id)
+        [HttpPost]
+        public async Task<IActionResult> GetMessage([FromBody] Guid id)
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
             {
                 Guid currentUserId = userId.Value;
-                var messages = await _messageService.GetMessageNearly(currentUserId, id.id);
+                var messages = await _messageService.GetMessageNearly(currentUserId, id);
                 if (messages == null || messages.Count == 0)
                 {
                     return NotFound(new { message = "Chưa có tin nhắn" });
