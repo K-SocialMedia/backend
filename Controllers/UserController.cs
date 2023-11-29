@@ -75,8 +75,8 @@ namespace ChatChit.Controllers
 
 
         [HttpGet]
-        [Route("get-user-by-id")]
-        public async Task<IActionResult> GetUserById([FromBody] Guid id)
+        [Route("get-user-by-id/{id}")]
+        public async Task<IActionResult> GetUserById(Guid id)
         {
             var userId = TokenHelper.GetUserIdFromClaims(User);
             if (userId != null)
