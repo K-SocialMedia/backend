@@ -32,6 +32,7 @@ namespace ChatChit
             builder.Services.AddScoped<ILoginService, LoginService>();
             builder.Services.AddScoped<IFriendService, FriendService>();
             builder.Services.AddScoped<ICommentService, CommentService>();
+            builder.Services.AddScoped<IMessageGroupService, MessageGroupService>();
             //JWT Auth
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
