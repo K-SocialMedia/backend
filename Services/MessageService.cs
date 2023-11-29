@@ -24,7 +24,7 @@ namespace ChatChit.Services
                    (m.senderId == friendId && m.receiverId == currentUserId))
                 .OrderBy(m => m.createAt)
                  .ToListAsync();
-            var messages = rawMessages.TakeLast(5).OrderBy(m => m.createAt).ToList();
+            var messages = rawMessages.TakeLast(10).OrderBy(m => m.createAt).ToList();
 
             var messageResponseList = new List<MessageResponseModel>();
 
