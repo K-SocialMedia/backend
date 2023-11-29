@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using ChatChit.Models.ResponseModel;
 using static System.Net.Mime.MediaTypeNames;
 using ChatChit.Models.GroupChat;
+using System.ComponentModel;
 
 namespace ChatChit.Hubs
 {
@@ -189,7 +190,10 @@ namespace ChatChit.Hubs
 
             foreach(Guid gm in groupMembers)
             {
+                if(gm != messageModel.senderId)
+                {
                 await Clients.Group(gm.ToString()).SendAsync("Noti", messageResponse);
+                }
             }
         }
     }
