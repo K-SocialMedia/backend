@@ -32,10 +32,10 @@ namespace ChatChit.Hubs
         }
 
 
-        public async Task JoinRoom(string roomId)
+        public async Task JoinRoom(ChatRoomModel model)
         {
             //await Clients.Group(userConnection.Room).SendAsync("ReceiveMessage", "Khoi", $"{userConnection.User} has joined {userConnection.Room}");
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, model.roomId);
         }
 
         public async Task JoinRoomChat(ChatRoomModel model)
