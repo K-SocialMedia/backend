@@ -18,9 +18,9 @@ namespace ChatChit.Controllers
             _commentService = commentService;
         }
 
-        [HttpPost]
-        [Route("get-comment")]
-        public async Task<IActionResult> GetComment([FromBody] Guid postId)
+        [HttpGet]
+        [Route("get-comment/{postId}")]
+        public async Task<IActionResult> GetComment(Guid postId)
         {
             var comments = await _commentService.GetComment(postId);
             if (comments == null || comments.Count == 0)
