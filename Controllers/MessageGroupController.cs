@@ -64,6 +64,27 @@ namespace ChatChit.Controllers
         }
 
         [HttpGet]
+        [Route("get-group-by-id")]
+        public async Task<IActionResult> GetGroup( Guid id)
+        {
+            var userId = TokenHelper.GetUserIdFromClaims(User);
+            if (userId != null)
+            {
+                Guid currentUserId = userId.Value;
+                var result = await _messageGroupService.GetGroup(currentUserId);
+                if (result != null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound(new { message = "Không có group chat" });
+                }
+            }
+            return BadRequest(new { message = "UserId claim not found in token" });
+        }
+
+        [HttpGet]
         [Route("get-message")]
         public async Task<IActionResult> GetMessage(Guid groupId)
         {

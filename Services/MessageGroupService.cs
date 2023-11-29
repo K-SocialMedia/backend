@@ -12,6 +12,7 @@ namespace ChatChit.Services
         public Task<StatusHelper> AddGroup(GroupWithUserRequestModel groupWithUser);
         public Task<List<GroupWithUserResponseModel>> GetGroupsForUser(Guid userId);
         public Task<List<MessageGroupResponseModel>> GetGroupMessages(Guid currentUserId, Guid groupId);
+        public Task<GroupWithUserResponseModel> GetGroup(Guid groupId);
     }
     public class MessageGroupService : IMessageGroupService
     {
@@ -139,6 +140,42 @@ namespace ChatChit.Services
             }
             return messageResponseList;
         }
+        public async Task<GroupWithUserResponseModel> GetGroup(Guid groupId)
+        {
+            var group = await _context.GroupChats.FindAsync(groupId);
 
+            if (group == null)
+            {
+                // Xử lý khi không tìm thấy nhóm
+                return null;
+            }
+
+            var groupMembers = await _context.GroupChatMembers
+                .Where(gcm => gcm.groupId == groupId)
+                .Select(gcm => gcm.userId)
+                .ToListAsync();
+
+            var users = await _context.Users
+                .Where(u => groupMembers.Contains(u.id))
+                .ToListAsync();
+
+            var userModels = users.Select(u => new UserResponseModel2
+            {
+                id = u.id,
+                fullName = u.fullName,
+                image = u.image,
+                nickName = u.nickName,
+                email = u.email
+            }).ToList();
+
+            var groupDetail = new GroupWithUserResponseModel
+            {
+                id = group.id,
+                groupName = group.groupName,
+                users = userModels
+            };
+
+            return groupDetail;
+        }
     }
 }
