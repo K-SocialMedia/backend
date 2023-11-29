@@ -180,7 +180,7 @@ namespace ChatChit.Hubs
                 image = messageModel.image,
                 createAt = messageModel.createAt,
             };
-            await Clients.OthersInGroup(roomId.ToString()).SendAsync("ReceiveMessage", messageResponse);
+            await Clients.Group(roomId.ToString()).SendAsync("ReceiveMessage", messageResponse);
             _context.GroupChatMessages.Add(messageModel);
             await _context.SaveChangesAsync();
             var groupMembers = _context.GroupChatMembers
