@@ -30,6 +30,7 @@ namespace ChatChit.Services
             foreach (var message in messages)
             {
                 var receiver = await _context.Users.FindAsync(message.receiverId);
+                var sender = await _context.Users.FindAsync(message.senderId);
 
                 if (receiver != null)
                 {
@@ -37,6 +38,7 @@ namespace ChatChit.Services
                     {
                         id = message.id,
                         senderId = message.senderId,
+                        senderName = sender.nickName,
                         content = message.content,
                         receiverName = receiver.nickName,
                         createAt = message.createAt,
