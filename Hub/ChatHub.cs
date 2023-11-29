@@ -5,6 +5,7 @@ using ChatChit.Models.RequestModel;
 using System.Security.Claims;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using ChatChit.Models.ResponseModel;
 
 namespace ChatChit.Hubs
 {
@@ -90,7 +91,21 @@ namespace ChatChit.Hubs
             messageModel.receiverId = receiverId;
             messageModel.isRead = false;
 
-            await Clients.OthersInGroup($"{senderId}{receiverId}").SendAsync("ReceiveMessage", messageModel);
+            var receiver = await _context.Users.FindAsync(messageModel.receiverId);
+            var sender = await _context.Users.FindAsync(messageModel.senderId);
+
+            MessageResponseModel messageresponse = new MessageResponseModel
+            {
+                id = messageModel.id,
+                senderId = messageModel.senderId,
+                receiverId = messageModel.receiverId,
+                senderName = sender.nickName,
+                receiverName = receiver.nickName,
+                content = messageModel.content,
+                createAt = messageModel.createAt
+
+            };
+            await Clients.OthersInGroup($"{senderId}{receiverId}").SendAsync("ReceiveMessage", messageresponse);
 
             try
             {
