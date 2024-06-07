@@ -57,11 +57,11 @@ namespace ChatChit
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+            // if (app.Environment.IsDevelopment())
+            // {
+            // }
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
 
             app.UseRouting();
 
@@ -83,7 +83,7 @@ namespace ChatChit
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
 
             app.MapControllers();

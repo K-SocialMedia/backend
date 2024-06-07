@@ -58,7 +58,7 @@ namespace ChatChit.Controllers
             //}
             if (!await _userService.CheckUniqueEmail(user.email))
             {
-                return BadRequest(new { message = "Email da ton tai" });
+                return BadRequest(new { message = "Email đã tồn tại" });
             }
             var hashedPassword = BC.HashPassword(user.password);
             UserModel newUser = new UserModel();
@@ -85,7 +85,7 @@ namespace ChatChit.Controllers
                 UserResponseModel findUser = await _userService.GetUserById(currentUserId, id);
                 if (findUser == null)
                 {
-                    return NotFound(new { message = "Khong tim thay user" });
+                    return NotFound(new { message = "Không tìm thấy User" });
                 }
                 return Ok(findUser);
             }
@@ -103,7 +103,7 @@ namespace ChatChit.Controllers
                 UserResponseModel findUser = await _userService.GetUserInformation(currentUserId);
                 if (findUser == null)
                 {
-                    return NotFound(new { message = "Khong tim thay user" });
+                    return NotFound(new { message = "Không tìm thấy User" });
                 }
                 return Ok(findUser);
             }
@@ -183,7 +183,7 @@ namespace ChatChit.Controllers
                 if(relatedFriends != null)
                 {
                 return Ok(relatedFriends);
-                }return NotFound(new { message = "Chua tim thay ban moi" });
+                }return NotFound(new { message = "Hãy mời thêm bạn bè tạo tài khoản để kết bạn" });
             }
 
             return BadRequest(new { message = "UserId claim not found in token" });
